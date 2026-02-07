@@ -24,9 +24,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 .hdb{display:flex;align-items:center;gap:12px}
 .logo{width:44px;height:44px;background:linear-gradient(145deg,#4ADE80,#22C55E);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;box-shadow:0 4px 12px rgba(34,197,94,0.3)}
 .brt{font-size:18px;font-weight:700;background:linear-gradient(90deg,#fff,#3ECF8E);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.brs{font-size:10px;color:var(--supa);letter-spacing:0.5px;display:flex;align-items:center;gap:4px}
-.brs::before{content:'';width:6px;height:6px;background:var(--supa);border-radius:50%;animation:pulse 2s infinite}
-.hdr{display:flex;gap:8px}
+.brs{font-size:10px;color:var(--t3);letter-spacing:0.5px;font-style:italic}
+.hdr{display:flex;gap:8px;align-items:center}
+.conn-badge{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.05);border:0.5px solid var(--b);border-radius:20px;font-size:10px;color:var(--t3);font-weight:500}
+.conn-badge.on{background:rgba(62,207,142,0.15);border-color:rgba(62,207,142,0.3);color:var(--supa)}
+.conn-badge.on::before{content:'';width:6px;height:6px;background:var(--supa);border-radius:50%;animation:pulse 2s infinite}
 .hbtn{width:40px;height:40px;background:var(--glass);border:0.5px solid var(--b);border-radius:12px;color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
 .hbtn:hover{background:var(--bl);color:var(--t1);transform:scale(1.05)}
 .hbtn svg{width:18px;height:18px}
@@ -56,8 +58,6 @@ label.hbtn{position:relative}
 .setup-status{padding:12px;border-radius:10px;font-size:12px;margin-top:12px;display:none}
 .setup-status.success{display:block;background:rgba(62,207,142,0.15);color:var(--supa);border:0.5px solid rgba(62,207,142,0.3)}
 .setup-status.error{display:block;background:rgba(255,69,58,0.15);color:var(--bad);border:0.5px solid rgba(255,69,58,0.3)}
-.connected-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(62,207,142,0.15);border:0.5px solid rgba(62,207,142,0.3);border-radius:20px;font-size:11px;color:var(--supa);font-weight:600}
-.connected-badge::before{content:'';width:8px;height:8px;background:var(--supa);border-radius:50%;animation:pulse 2s infinite}
 
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
@@ -221,6 +221,8 @@ textarea.form-input{resize:none;min-height:100px}
 .dup-group{background:var(--glass);border:0.5px solid var(--b);border-radius:16px;padding:16px;margin-bottom:16px}
 .dup-header{font-size:14px;font-weight:600;color:var(--warn);margin-bottom:12px;padding-bottom:8px;border-bottom:0.5px solid var(--b)}
 @keyframes spin{to{transform:rotate(360deg)}}
+.hbtn svg{transition:transform 0.3s}
+#refreshBtn.spinning svg{animation:spin 1s linear infinite}
 .empty{text-align:center;padding:40px;color:var(--t3)}
 .hidden{display:none!important}
 </style>
@@ -233,10 +235,12 @@ textarea.form-input{resize:none;min-height:100px}
 <div class="logo">W!</div>
 <div>
 <div class="brt">Wan!Voice</div>
-<div class="brs" id="connStatus">Supabase 未接続</div>
+<div class="brs">Let's speak up your Wan!</div>
 </div>
 </div>
 <div class="hdr">
+<div class="conn-badge" id="connStatus">未接続</div>
+<button class="hbtn" onclick="refreshData()" title="データ更新" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
 <label class="hbtn" title="インポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><input type="file" id="csvImport" accept=".csv"></label>
 <button class="hbtn" onclick="exportCSV()" title="エクスポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
 </div>
@@ -307,7 +311,7 @@ textarea.form-input{resize:none;min-height:100px}
 <!-- AI Chat -->
 <div class="ai-section">
 <div class="ai-header">
-<div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5E5CE6"/><stop offset="100%" style="stop-color:#BF5AF2"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><ellipse cx="50" cy="62" rx="18" ry="16" fill="#fff"/><ellipse cx="32" cy="40" rx="10" ry="11" fill="#fff"/><ellipse cx="68" cy="40" rx="10" ry="11" fill="#fff"/><ellipse cx="42" cy="28" rx="8" ry="9" fill="#fff"/><ellipse cx="58" cy="28" rx="8" ry="9" fill="#fff"/></svg></div>
+<div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#5E5CE6"/><stop offset="100%" style="stop-color:#BF5AF2"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><path d="M35 40v20l15 12V28L35 40z" fill="#fff"/><rect x="28" y="40" width="10" height="20" rx="2" fill="#fff"/><path d="M58 35c4 4 6 9 6 15s-2 11-6 15" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M66 28c6 6 9 14 9 22s-3 16-9 22" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
 <div class="ai-info"><h3>Wan!アシスタント</h3><p>フィードバック分析をAIがサポート</p></div>
 <div class="ai-status">オンライン</div>
 </div>
@@ -440,7 +444,9 @@ async function connectSupabase() {
     status.className = 'setup-status success';
     status.textContent = '✅ 接続成功！データを読み込んでいます...';
     
-    document.getElementById('connStatus').innerHTML = '<span class="connected-badge">Supabase 接続中</span>';
+    var badge = document.getElementById('connStatus');
+    badge.textContent = '接続中';
+    badge.classList.add('on');
     
     // Load data and show main content
     await loadData();
@@ -501,6 +507,47 @@ async function loadData() {
     console.error('Load error:', err);
     addMsg('❌ データ読み込みエラー: ' + err.message,'bot');
   }
+}
+
+// ===== REFRESH DATA =====
+async function refreshData() {
+  var btn = document.getElementById('refreshBtn');
+  btn.style.animation = 'spin 1s linear infinite';
+  
+  if (!isConnected) {
+    btn.style.animation = '';
+    addMsg('📱 ローカルモードではデータ更新はありません','bot');
+    return;
+  }
+  
+  try {
+    var res = await fetch(supabaseUrl + '/rest/v1/feedbacks?order=created_at.desc', {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': 'Bearer ' + supabaseKey,
+        'Cache-Control': 'no-cache'
+      }
+    });
+    
+    if (!res.ok) throw new Error('更新エラー');
+    
+    var newData = await res.json();
+    var diff = newData.length - data.length;
+    data = newData;
+    renderAll();
+    
+    if (diff > 0) {
+      addMsg('🔄 更新完了！ ' + diff + '件の新しいデータがあります','bot');
+    } else if (diff < 0) {
+      addMsg('🔄 更新完了！ ' + Math.abs(diff) + '件削除されました','bot');
+    } else {
+      addMsg('✅ 最新の状態です（' + data.length + '件）','bot');
+    }
+  } catch (err) {
+    addMsg('❌ 更新エラー: ' + err.message,'bot');
+  }
+  
+  btn.style.animation = '';
 }
 
 // ===== AUTO RECONNECT =====
@@ -687,14 +734,171 @@ function showTyping() { var box = document.getElementById('chatBox'), div = docu
 function hideTyping() { var t = document.querySelector('.typing-ind'); if (t) t.remove(); }
 
 function generateAI(q) {
-  var ql = q.toLowerCase();
-  if (ql.includes('要約') || ql.includes('まとめ')) { var st = getStats(), ss = getSessions(); return '📊 <b>フィードバック要約</b><br><br>全<b>' + data.length + '件</b>（' + ss.length + '回分）<br><br>👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>🔥 優先度高: ' + (st.prio['高'] || 0) + '件' + (isConnected ? '<br><br>☁️ Supabaseに保存中' : ''); }
-  if (ql.includes('問題') || ql.includes('トラブル') || ql.includes('課題')) { var probs = data.filter(function(d) { return d.category === 'トラブル' || d.category === '改善点'; }); if (!probs.length) return '✅ 問題点の報告はありません'; var r = '⚠️ <b>問題点（' + probs.length + '件）</b><br><br>'; probs.slice(0, 4).forEach(function(p) { r += '• ' + esc(p.content) + '<br><small style="color:var(--t3)">' + p.session + '/' + p.staff + '</small><br><br>'; }); return r; }
-  if (ql.includes('良かった') || ql.includes('良い点')) { var goods = data.filter(function(d) { return d.category === '良かった点'; }); if (!goods.length) return '良かった点の報告はまだありません'; var r = '👍 <b>良かった点（' + goods.length + '件）</b><br><br>'; goods.slice(0, 4).forEach(function(g) { r += '• ' + esc(g.content) + '<br><small style="color:var(--t3)">' + g.session + '/' + g.staff + '</small><br><br>'; }); return r; }
-  if (ql.includes('優先') || ql.includes('緊急')) { var high = data.filter(function(d) { return d.priority === '高'; }); if (!high.length) return '✅ 優先度高の項目はありません'; var r = '🔥 <b>優先度高（' + high.length + '件）</b><br><br>'; high.forEach(function(h) { r += '• ' + esc(h.content) + '<br><small style="color:var(--t3)">' + h.category + '/' + h.session + '</small><br><br>'; }); return r; }
-  if (ql.includes('傾向') || ql.includes('分析')) { var ss = getSessions(), st = getStats(), r = '📈 <b>傾向分析</b><br><br>'; ss.forEach(function(s) { var d = st.sess[s] || {}, g = d['良かった点'] || 0, b = (d['改善点'] || 0) + (d['トラブル'] || 0); r += '<b>' + s + '</b>: 👍' + g + ' / 📝' + b + '<br>'; }); return r; }
-  var sm = ql.match(/第(\d+)回/); if (sm) { var ts = '第' + sm[1] + '回', sd = data.filter(function(d) { return d.session === ts; }); if (!sd.length) return ts + 'のデータはありません'; var r = '📋 <b>' + ts + '（' + sd.length + '件）</b><br><br>'; sd.forEach(function(d) { r += '• [' + d.category + '] ' + esc(d.content) + '<br>'; }); return r; }
-  return '🤔 すみません、よくわかりませんでした。<br><br>こんな質問ができます：<br>• 要約して<br>• 問題点は？<br>• 良かった点<br>• 優先度高いもの<br>• 第1回の内容';
+  var ql = q.toLowerCase().replace(/[？?！!。、\s]/g, '');
+  var st = getStats(), ss = getSessions();
+  
+  // キーワードマッチング（柔軟に）
+  var patterns = {
+    summary: ['要約','まとめ','概要','全体','サマリ','総括','ぜんぶ','すべて','全部','どんな感じ','状況','レポート'],
+    problem: ['問題','トラブル','課題','困','悪い','ダメ','だめ','改善','直す','なおす','修正','バグ','エラー','クレーム','苦情','不満','心配','懸念','ネガティブ','negative'],
+    good: ['良','いい','よい','よかった','ポジティブ','positive','good','グッド','好評','評判','成功','うまく','嬉しい','感謝','ありがと','褒め'],
+    priority: ['優先','緊急','急ぎ','急ぐ','大事','重要','やばい','ヤバイ','すぐ','至急','最優先','プライオリティ'],
+    trend: ['傾向','推移','分析','変化','比較','トレンド','グラフ','チャート','経過','流れ'],
+    staff: ['誰','だれ','スタッフ','担当','人','メンバー','名前'],
+    count: ['何件','なんけん','いくつ','数','カウント','件数'],
+    recent: ['最近','最新','新しい','今日','昨日','さっき'],
+    search: ['検索','探','さがす','見つけ','ある？','ありますか','について']
+  };
+  
+  // パターンマッチ
+  function match(keys) {
+    return keys.some(function(k) { return ql.includes(k); });
+  }
+  
+  // 要約
+  if (match(patterns.summary) || ql.length < 3) {
+    return '📊 <b>フィードバック要約</b><br><br>' +
+      '全<b>' + data.length + '件</b>（' + ss.length + '回分）<br><br>' +
+      '👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>' +
+      '✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>' +
+      '⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>' +
+      '🔥 優先度高: ' + (st.prio['高'] || 0) + '件' +
+      (isConnected ? '<br><br>☁️ Supabaseに保存中' : '');
+  }
+  
+  // 問題・改善点
+  if (match(patterns.problem)) {
+    var probs = data.filter(function(d) { return d.category === 'トラブル' || d.category === '改善点'; });
+    if (!probs.length) return '✅ 問題点や改善点の報告はありません！素晴らしいですね👏';
+    var r = '⚠️ <b>問題点・改善点（' + probs.length + '件）</b><br><br>';
+    probs.slice(0, 5).forEach(function(p) {
+      r += '• ' + esc(p.content) + '<br><small style="color:var(--t3)">' + p.session + ' / ' + p.staff + ' / ' + p.priority + '</small><br><br>';
+    });
+    if (probs.length > 5) r += '<small>他 ' + (probs.length - 5) + '件...</small>';
+    return r;
+  }
+  
+  // 良かった点
+  if (match(patterns.good)) {
+    var goods = data.filter(function(d) { return d.category === '良かった点'; });
+    if (!goods.length) return '良かった点の報告はまだありません。これから増えるといいですね！';
+    var r = '👍 <b>良かった点（' + goods.length + '件）</b><br><br>';
+    goods.slice(0, 5).forEach(function(g) {
+      r += '• ' + esc(g.content) + '<br><small style="color:var(--t3)">' + g.session + ' / ' + g.staff + '</small><br><br>';
+    });
+    if (goods.length > 5) r += '<small>他 ' + (goods.length - 5) + '件...</small>';
+    return r;
+  }
+  
+  // 優先度高
+  if (match(patterns.priority)) {
+    var high = data.filter(function(d) { return d.priority === '高'; });
+    if (!high.length) return '✅ 優先度「高」の項目はありません。落ち着いてますね！';
+    var r = '🔥 <b>優先度高（' + high.length + '件）- 要対応！</b><br><br>';
+    high.forEach(function(h) {
+      r += '• ' + esc(h.content) + '<br><small style="color:var(--t3)">' + h.category + ' / ' + h.session + '</small><br><br>';
+    });
+    return r;
+  }
+  
+  // 傾向分析
+  if (match(patterns.trend)) {
+    if (!ss.length) return '📈 まだデータがないので傾向分析できません';
+    var r = '📈 <b>傾向分析</b><br><br>';
+    ss.forEach(function(s) {
+      var d = st.sess[s] || {}, g = d['良かった点'] || 0, b = (d['改善点'] || 0) + (d['トラブル'] || 0);
+      var emoji = g > b ? '😊' : g < b ? '😟' : '😐';
+      r += emoji + ' <b>' + s + '</b>: 👍' + g + ' / 📝' + b + '<br>';
+    });
+    var totalGood = st.cat['良かった点'] || 0;
+    var totalBad = (st.cat['改善点'] || 0) + (st.cat['トラブル'] || 0);
+    r += '<br><b>全体:</b> ' + (totalGood > totalBad ? 'ポジティブ傾向 📈' : totalGood < totalBad ? '改善の余地あり 📉' : 'バランス型 ➡️');
+    return r;
+  }
+  
+  // スタッフ別
+  if (match(patterns.staff)) {
+    var staffCounts = {};
+    data.forEach(function(d) { staffCounts[d.staff] = (staffCounts[d.staff] || 0) + 1; });
+    var staffList = Object.keys(staffCounts).sort(function(a, b) { return staffCounts[b] - staffCounts[a]; });
+    if (!staffList.length) return '👤 スタッフデータがありません';
+    var r = '👤 <b>スタッフ別投稿数</b><br><br>';
+    staffList.forEach(function(s) { r += '• ' + esc(s) + ': ' + staffCounts[s] + '件<br>'; });
+    return r;
+  }
+  
+  // 件数
+  if (match(patterns.count)) {
+    return '📊 現在 <b>' + data.length + '件</b> のフィードバックがあります<br><br>' +
+      '👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>' +
+      '✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>' +
+      '⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>' +
+      '💜 その他: ' + (st.cat['その他'] || 0) + '件';
+  }
+  
+  // 最近
+  if (match(patterns.recent)) {
+    if (!data.length) return '📭 まだデータがありません';
+    var recent = data.slice(0, 3);
+    var r = '🕐 <b>最近のフィードバック</b><br><br>';
+    recent.forEach(function(d) {
+      r += '• [' + d.category + '] ' + esc(d.content) + '<br><small style="color:var(--t3)">' + d.date + ' / ' + d.staff + '</small><br><br>';
+    });
+    return r;
+  }
+  
+  // 特定の回
+  var sessionMatch = ql.match(/(\d+)/);
+  if (sessionMatch && (ql.includes('回') || ql.includes('第'))) {
+    var ts = '第' + sessionMatch[1] + '回';
+    var sd = data.filter(function(d) { return d.session === ts; });
+    if (!sd.length) return '📋 ' + ts + 'のデータはまだありません';
+    var r = '📋 <b>' + ts + '（' + sd.length + '件）</b><br><br>';
+    sd.forEach(function(d) { r += '• [' + d.category + '] ' + esc(d.content) + '<br>'; });
+    return r;
+  }
+  
+  // キーワード検索（フォールバック）
+  if (match(patterns.search) || ql.length >= 2) {
+    var keyword = ql.replace(/検索|探して|さがして|ある|ありますか|について|教えて|おしえて/g, '').trim();
+    if (keyword.length >= 2) {
+      var found = data.filter(function(d) {
+        return d.content.toLowerCase().includes(keyword) || 
+               d.staff.toLowerCase().includes(keyword) ||
+               d.session.includes(keyword);
+      });
+      if (found.length) {
+        var r = '🔍 <b>「' + keyword + '」の検索結果（' + found.length + '件）</b><br><br>';
+        found.slice(0, 5).forEach(function(f) {
+          r += '• ' + esc(f.content) + '<br><small style="color:var(--t3)">' + f.category + ' / ' + f.session + ' / ' + f.staff + '</small><br><br>';
+        });
+        return r;
+      }
+    }
+  }
+  
+  // どれにもマッチしない場合、データから関連を探す
+  var anyMatch = data.filter(function(d) {
+    return d.content.toLowerCase().includes(ql.substring(0, 3));
+  });
+  if (anyMatch.length) {
+    var r = '🔍 「' + q + '」に関連しそうなデータ：<br><br>';
+    anyMatch.slice(0, 3).forEach(function(m) {
+      r += '• ' + esc(m.content) + '<br>';
+    });
+    return r;
+  }
+  
+  // 最終フォールバック
+  return '🤖 「' + esc(q) + '」ですね！<br><br>' +
+    '現在のデータ: ' + data.length + '件<br><br>' +
+    '質問例：<br>' +
+    '• 「まとめて」「状況は？」<br>' +
+    '• 「問題ある？」「困ってること」<br>' +
+    '• 「良かったこと」「うまくいったの」<br>' +
+    '• 「急ぎのやつ」「優先高いの」<br>' +
+    '• 「第1回どうだった？」<br>' +
+    '• 「〇〇で検索」';
 }
 
 // ===== MODAL =====
