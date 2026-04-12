@@ -81,9 +81,9 @@ body.modal-open{overflow:hidden;position:fixed;width:100%}
 .brt{font-size:17px;font-weight:700;color:var(--t1);letter-spacing:-0.02em}
 .brs{font-size:12px;color:var(--t3);letter-spacing:0;font-weight:400;margin-top:2px}
 .hdr{display:flex;gap:6px;align-items:center}
-.conn-badge{display:flex;align-items:center;gap:7px;padding:6px 12px;background:#fff;border:1px solid var(--b);border-radius:999px;font-size:12px;color:var(--t2);font-weight:500;box-shadow:var(--shadow-card)}
-.conn-badge.on{background:rgba(5,150,105,0.06);border-color:rgba(5,150,105,0.2);color:#059669;box-shadow:0 1px 2px rgba(5,150,105,0.08),0 4px 12px rgba(5,150,105,0.1)}
-.conn-badge.on::before{content:'';width:6px;height:6px;background:#10B981;border-radius:50%;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.conn-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:#fff;border:1px solid var(--b);border-radius:999px;font-size:11px;color:var(--t3);font-weight:600;letter-spacing:0.06em;box-shadow:var(--shadow-card);white-space:nowrap;flex-shrink:0}
+.conn-badge.on{background:rgba(5,150,105,0.06);border-color:rgba(5,150,105,0.22);color:#059669;box-shadow:0 1px 2px rgba(5,150,105,0.08),0 4px 12px rgba(5,150,105,0.1)}
+.conn-badge.on::before{content:'';width:6px;height:6px;min-width:6px;min-height:6px;background:#10B981;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
 .hbtn{width:38px;height:38px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top)}
 .hbtn:hover{background:#fff;border-color:var(--bl);color:var(--t1);transform:translateY(-1px);box-shadow:var(--shadow-card-hover),var(--highlight-top)}
 .hbtn:active{transform:translateY(0);box-shadow:var(--shadow-card),var(--highlight-top)}
@@ -143,7 +143,11 @@ label.hbtn{position:relative}
 @media(min-width:900px){.charts{grid-template-columns:1.4fr 0.6fr}}
 .card{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:28px;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top)}
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover),var(--highlight-top);border-color:var(--bl)}
-.card-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.card-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:24px;min-width:0}
+.card-header #dashSessionFilter{max-width:100%;min-width:0}
+@media(max-width:600px){
+  .card-header #dashSessionFilter{width:100%;flex:1 1 100%}
+}
 .card-title{font-size:15px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
 .card-title svg{width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .list-title svg{width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
@@ -198,8 +202,8 @@ label.hbtn{position:relative}
 .ai-avatar svg{width:100%;height:100%}
 .ai-info h3{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-0.01em}
 .ai-info p{font-size:13px;color:var(--t3);margin-top:2px}
-.ai-status{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;color:#059669;font-weight:500}
-.ai-status::before{content:'';width:6px;height:6px;background:#10B981;border-radius:50%;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.ai-status{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#059669;font-weight:600;letter-spacing:0.06em;white-space:nowrap;flex-shrink:0}
+.ai-status::before{content:'';width:6px;height:6px;min-width:6px;min-height:6px;background:#10B981;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.9)}}
 
 .quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
@@ -239,7 +243,7 @@ label.hbtn{position:relative}
 .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 .list-title{font-size:16px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
 .list-filters{display:flex;gap:8px;flex-wrap:wrap}
-.filter-select{padding:9px 12px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
+.filter-select{padding:9px 12px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card);max-width:100%}
 .filter-select:focus,.filter-select:hover{outline:none;border-color:var(--bl);color:var(--t1);box-shadow:var(--shadow-card-hover)}
 .search-box{position:relative}
 .search-box input{padding:9px 12px 9px 36px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:13px;width:200px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
@@ -290,9 +294,10 @@ label.hbtn{position:relative}
 .modal-close{width:32px;height:32px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
 .modal-close:hover{background:var(--card-2);color:var(--t1);transform:translateY(-1px);box-shadow:var(--shadow-card-hover)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.form-group{margin-bottom:16px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:16px;min-width:0}
 .form-label{display:block;font-size:13px;color:var(--t2);margin-bottom:8px;font-weight:500}
-.form-input{width:100%;padding:12px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
+.form-input{width:100%;min-width:0;padding:12px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
 .form-input:focus{outline:none;border-color:var(--a);background:#fff;box-shadow:0 0 0 3px rgba(26,79,160,0.1),0 1px 2px rgba(26,79,160,0.05)}
 textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 .voice-wrap{position:relative}
@@ -385,7 +390,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 </div>
 </div>
 <div class="hdr">
-<div class="conn-badge" id="connStatus">未接続</div>
+<div class="conn-badge" id="connStatus">OFF</div>
 <button class="hbtn" onclick="refreshData()" title="データ更新" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
 <label class="hbtn" title="インポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><input type="file" id="csvImport" accept=".csv"></label>
 <button class="hbtn" onclick="exportCSV()" title="エクスポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
@@ -445,7 +450,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="ai-header">
 <div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6366F1"/><stop offset="100%" style="stop-color:#8B5CF6"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><path d="M35 40v20l15 12V28L35 40z" fill="#fff"/><rect x="28" y="40" width="10" height="20" rx="2" fill="#fff"/><path d="M58 35c4 4 6 9 6 15s-2 11-6 15" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M66 28c6 6 9 14 9 22s-3 16-9 22" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
 <div class="ai-info"><h3>Wan!アシスタント</h3><p>フィードバック分析をAIがサポート</p></div>
-<div class="ai-status">オンライン</div>
+<div class="ai-status">ONLINE</div>
 </div>
 <div class="quick-btns">
 <button class="qbtn qbtn-summary" onclick="askBot('要約して')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>全体要約</button>
@@ -572,7 +577,7 @@ async function connectSupabase() {
     status.textContent = '✅ 接続成功！データを読み込んでいます...';
     
     var badge = document.getElementById('connStatus');
-    badge.textContent = '接続中';
+    badge.textContent = 'LIVE';
     badge.classList.add('on');
     
     // Load data and show main content
@@ -601,7 +606,7 @@ function loadScript(src) {
 
 function useLocalMode() {
   isConnected = false;
-  document.getElementById('connStatus').textContent = 'ローカルモード';
+  document.getElementById('connStatus').textContent = 'LOCAL';
   document.getElementById('setupSection').classList.add('hidden');
   document.getElementById('mainContent').classList.remove('hidden');
   
