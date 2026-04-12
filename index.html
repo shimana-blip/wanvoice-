@@ -16,7 +16,9 @@
   --r:16px;--sb:env(safe-area-inset-bottom,0px)
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro','Hiragino Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100dvh;line-height:1.5}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro','Hiragino Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100dvh;line-height:1.5;overflow-x:hidden}
+html{overflow-x:hidden}
+body.modal-open{overflow:hidden;position:fixed;width:100%}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 30% 10%,rgba(62,207,142,0.12),transparent 40%),radial-gradient(circle at 80% 80%,rgba(94,92,230,0.08),transparent 40%);pointer-events:none}
 
 .hd{background:rgba(0,0,0,0.6);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-bottom:0.5px solid var(--b);padding:12px 20px;position:sticky;top:0;z-index:100}
@@ -80,7 +82,9 @@ label.hbtn{position:relative}
 .card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
 .card-title span{font-size:16px}
 
-.bar-wrap{position:relative;padding-left:32px}
+.bar-wrap{position:relative;padding-left:32px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.bar-wrap::-webkit-scrollbar{height:4px}
+.bar-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:2px}
 .bar-y{position:absolute;left:0;top:0;bottom:24px;width:28px;display:flex;flex-direction:column;justify-content:space-between;font-size:10px;color:var(--t3);text-align:right}
 .bar-chart{display:flex;align-items:flex-end;gap:8px;height:140px;border-bottom:1px solid var(--b);padding-bottom:8px}
 .bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -92,6 +96,18 @@ label.hbtn{position:relative}
 .legend-dot{width:8px;height:8px;border-radius:2px}
 
 .pie-wrap{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;padding:10px 0}
+.pie-wrap.pie-main{gap:40px;padding:20px 0}
+.pie-wrap.pie-main .pie-container{width:200px;height:200px}
+.pie-wrap.pie-main .pie-center{width:120px;height:120px}
+.pie-wrap.pie-main .pie-val{font-size:36px}
+.pie-wrap.pie-main .pie-item{font-size:14px;min-width:140px}
+.pie-wrap.pie-main .pie-dot{width:14px;height:14px}
+@media(max-width:600px){
+  .pie-wrap.pie-main{gap:20px;padding:10px 0}
+  .pie-wrap.pie-main .pie-container{width:170px;height:170px}
+  .pie-wrap.pie-main .pie-center{width:100px;height:100px}
+  .pie-wrap.pie-main .pie-val{font-size:30px}
+}
 .pie-container{position:relative;width:130px;height:130px}
 .pie{width:100%;height:100%;border-radius:50%;transition:transform 0.3s}
 .pie:hover{transform:scale(1.05)}
@@ -102,13 +118,6 @@ label.hbtn{position:relative}
 .pie-item{display:flex;align-items:center;gap:8px;font-size:12px}
 .pie-dot{width:12px;height:12px;border-radius:4px}
 .pie-pct{margin-left:auto;color:var(--t2);font-weight:600}
-
-.prio-grid{display:grid;gap:12px}
-@media(min-width:600px){.prio-grid{grid-template-columns:repeat(3,1fr)}}
-.prio-item{background:var(--glass);border-radius:12px;padding:14px}
-.prio-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
-.prio-bar{height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
-.prio-fill{height:100%;border-radius:3px;transition:width 0.5s ease}
 
 /* AI Chat */
 .ai-section{background:linear-gradient(145deg,rgba(94,92,230,0.1),rgba(94,92,230,0.02));border:0.5px solid rgba(94,92,230,0.3);border-radius:24px;padding:20px;margin-bottom:20px}
@@ -167,6 +176,7 @@ label.hbtn{position:relative}
 .tag.warn{background:rgba(255,214,10,0.15);color:#FBBF24}
 .tag.bad{background:rgba(255,69,58,0.15);color:#F87171}
 .tag.other{background:rgba(191,90,242,0.15);color:#C084FC}
+.tag.pending{background:rgba(150,150,150,0.15);color:#B0B0B0;animation:pulse 1.5s ease-in-out infinite}
 .del-btn{background:rgba(255,69,58,0.1);border:none;color:#F87171;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s}
 .del-btn:hover{background:rgba(255,69,58,0.2)}
 .item-content{font-size:14px;line-height:1.6;margin-bottom:10px}
@@ -222,9 +232,46 @@ textarea.form-input{resize:none;min-height:100px}
 .dup-header{font-size:14px;font-weight:600;color:var(--warn);margin-bottom:12px;padding-bottom:8px;border-bottom:0.5px solid var(--b)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hbtn svg{transition:transform 0.3s}
+#refreshBtn.spinning{background:rgba(62,207,142,0.2);border-color:var(--supa);color:var(--supa)}
 #refreshBtn.spinning svg{animation:spin 1s linear infinite}
+#refreshBtn:disabled{cursor:wait}
 .empty{text-align:center;padding:40px;color:var(--t3)}
 .hidden{display:none!important}
+
+/* ===== Mobile optimization ===== */
+@media(max-width:600px){
+  .mn{padding:14px;padding-bottom:calc(110px + var(--sb))}
+  .card{padding:16px;border-radius:20px}
+  /* Typography - minimum 12px for readability */
+  .stat-label,.bar-label,.bar-y,.legend-item,.pie-label,.ai-info p,.ai-status,.voice-status,.item-meta,.tag,.del-btn,.nav-btn,.filter-select,.search-box input,.conn-badge,.brs{font-size:12px!important}
+  .stat-val{font-size:24px}
+  .card-title{font-size:15px}
+  .list-title{font-size:16px}
+  .modal-title{font-size:18px}
+  /* Tap targets */
+  .modal-close{width:40px;height:40px;font-size:20px}
+  .del-btn{padding:8px 14px;min-height:36px}
+  .nav-btn{padding:10px 14px;min-height:44px}
+  .qbtn{padding:12px 16px;min-height:40px;font-size:13px}
+  .btn{padding:16px;min-height:52px;font-size:15px}
+  .hbtn{width:42px;height:42px}
+  /* Bar chart - smaller gaps on narrow screens */
+  .bar-chart{gap:4px}
+  .bar-group{min-width:24px}
+  /* Bottom nav - keep within viewport */
+  .bnav{bottom:12px;padding:6px;gap:4px;max-width:calc(100vw - 24px)}
+  .nav-btn svg{width:20px;height:20px}
+  .nav-add{width:52px;height:52px}
+  /* Search box full width */
+  .search-box input{width:100%}
+  .list-header{flex-direction:column;align-items:stretch}
+  /* Header brand - hide subtitle to save space */
+  .brs{display:none}
+  /* Form row - stack date and session on very narrow */
+  .form-row{gap:10px}
+  /* Modal - full height feel */
+  .modal-content{max-height:92vh;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -243,6 +290,7 @@ textarea.form-input{resize:none;min-height:100px}
 <button class="hbtn" onclick="refreshData()" title="データ更新" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
 <label class="hbtn" title="インポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><input type="file" id="csvImport" accept=".csv"></label>
 <button class="hbtn" onclick="exportCSV()" title="エクスポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+<button class="hbtn" onclick="resetSettings()" title="接続設定リセット"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 </div>
 </header>
@@ -284,28 +332,13 @@ textarea.form-input{resize:none;min-height:100px}
 <!-- Stats -->
 <div class="stats" id="statsGrid"></div>
 
-<!-- Charts -->
-<div class="charts">
-<div class="card">
-<div class="card-header">
-<div class="card-title"><span>📊</span> 会ごとの推移</div>
-<div class="legend" id="legend"></div>
-</div>
-<div class="bar-wrap">
-<div class="bar-y" id="barY"></div>
-<div class="bar-chart" id="barChart"></div>
-</div>
-</div>
-<div class="card">
-<div class="card-title"><span>📈</span> カテゴリ分布</div>
-<div class="pie-wrap" id="pieChart"></div>
-</div>
-</div>
-
-<!-- Priority -->
+<!-- Main Chart: Category Pie with Session Filter -->
 <div class="card" style="margin-bottom:20px">
-<div class="card-title"><span>⚡</span> 優先度別</div>
-<div class="prio-grid" id="prioChart"></div>
+<div class="card-header">
+<div class="card-title"><span>📈</span> カテゴリ分布</div>
+<select class="filter-select" id="dashSessionFilter" onchange="onDashFilterChange()"><option value="all">全ての回</option></select>
+</div>
+<div class="pie-wrap pie-main" id="pieChart"></div>
 </div>
 
 <!-- AI Chat -->
@@ -319,7 +352,7 @@ textarea.form-input{resize:none;min-height:100px}
 <button class="qbtn" onclick="askBot('要約して')">📊 全体要約</button>
 <button class="qbtn" onclick="askBot('問題点は？')">⚠️ 問題点</button>
 <button class="qbtn" onclick="askBot('良かった点は？')">👍 良い点</button>
-<button class="qbtn" onclick="askBot('優先度高いものは？')">🔥 優先度高</button>
+<button class="qbtn" onclick="askBot('hotな声は？')">🔥 Hot!Voice</button>
 <button class="qbtn" onclick="askBot('傾向を教えて')">📈 傾向</button>
 </div>
 <div class="chat-box" id="chatBox">
@@ -351,7 +384,7 @@ textarea.form-input{resize:none;min-height:100px}
 <div id="tabDup" class="hidden">
 <div class="list-section">
 <div class="list-header">
-<div class="list-title"><span>🔄</span> 重複・類似フィードバック</div>
+<div class="list-title"><span>🔥</span> Hot!Voice - よく出てる声</div>
 </div>
 <div id="dupList"></div>
 </div>
@@ -364,7 +397,7 @@ textarea.form-input{resize:none;min-height:100px}
 <button class="nav-btn active" onclick="switchTab('Dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>ダッシュ</button>
 <button class="nav-add" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 <button class="nav-btn" onclick="switchTab('List')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>一覧</button>
-<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>重複</button>
+<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Hot!Voice</button>
 </nav>
 </div>
 
@@ -375,11 +408,7 @@ textarea.form-input{resize:none;min-height:100px}
 <div class="modal-header"><div class="modal-title">新規フィードバック</div><button class="modal-close" onclick="closeModal()">×</button></div>
 <div class="form-row">
 <div class="form-group"><label class="form-label">日付</label><input type="date" class="form-input" id="inputDate"></div>
-<div class="form-group"><label class="form-label">回</label><input type="text" class="form-input" id="inputSession" placeholder="第○回"></div>
-</div>
-<div class="form-row">
-<div class="form-group"><label class="form-label">カテゴリ</label><select class="form-input" id="inputCategory"><option value="良かった点">良かった点</option><option value="改善点">改善点</option><option value="トラブル">トラブル</option><option value="その他">その他</option></select></div>
-<div class="form-group"><label class="form-label">優先度</label><select class="form-input" id="inputPriority"><option value="中">中</option><option value="高">高</option><option value="低">低</option></select></div>
+<div class="form-group"><label class="form-label">回</label><input type="text" class="form-input" id="inputSession" placeholder="第○回" list="sessionHistory" autocomplete="off"><datalist id="sessionHistory"></datalist></div>
 </div>
 <div class="form-group"><label class="form-label">スタッフ名</label><input type="text" class="form-input" id="inputStaff" placeholder="名前"></div>
 <div class="form-group"><label class="form-label">内容</label>
@@ -397,9 +426,8 @@ var supabaseKey = '';
 var isConnected = false;
 var data = [];
 
-var catColors = {良かった点:'good',改善点:'warn',トラブル:'bad',その他:'other'};
+var catColors = {良かった点:'good',改善点:'warn',トラブル:'bad',その他:'other','判定中...':'pending'};
 var catHex = {良かった点:'#30D158',改善点:'#FFD60A',トラブル:'#FF453A',その他:'#BF5AF2'};
-var prioColors = {高:'#FF453A',中:'#FFD60A',低:'#30D158'};
 
 // ===== SUPABASE CONNECTION =====
 async function connectSupabase() {
@@ -480,8 +508,8 @@ function useLocalMode() {
   
   // Sample data for local mode
   data = [
-    {id:1,date:'2024-01-15',session:'第1回',category:'良かった点',staff:'田中',content:'参加者の反応が良い',priority:'中'},
-    {id:2,date:'2024-01-15',session:'第1回',category:'改善点',staff:'佐藤',content:'資料の文字が小さい',priority:'高'}
+    {id:1,date:'2024-01-15',session:'第1回',category:'良かった点',staff:'田中',content:'参加者の反応が良い'},
+    {id:2,date:'2024-01-15',session:'第1回',category:'改善点',staff:'佐藤',content:'資料の文字が小さい'}
   ];
   renderAll();
   addMsg('📱 ローカルモードで起動しました。データはブラウザ内にのみ保存されます。','bot');
@@ -512,13 +540,20 @@ async function loadData() {
 // ===== REFRESH DATA =====
 async function refreshData() {
   var btn = document.getElementById('refreshBtn');
-  btn.style.animation = 'spin 1s linear infinite';
+  if (btn.classList.contains('spinning')) return; // 二重クリック防止
+  btn.classList.add('spinning');
+  btn.disabled = true;
   
   if (!isConnected) {
-    btn.style.animation = '';
-    addMsg('📱 ローカルモードではデータ更新はありません','bot');
+    setTimeout(function(){
+      btn.classList.remove('spinning');
+      btn.disabled = false;
+      addMsg('📱 ローカルモードではデータ更新はありません','bot');
+    }, 400);
     return;
   }
+  
+  addMsg('🔄 更新中...','bot');
   
   try {
     var res = await fetch(supabaseUrl + '/rest/v1/feedbacks?order=created_at.desc', {
@@ -536,18 +571,26 @@ async function refreshData() {
     data = newData;
     renderAll();
     
+    // 直前の「更新中...」メッセージを削除
+    var box = document.getElementById('chatBox');
+    var msgs = box.querySelectorAll('.msg.bot');
+    if (msgs.length && msgs[msgs.length - 1].textContent.indexOf('更新中') !== -1) {
+      msgs[msgs.length - 1].remove();
+    }
+    
     if (diff > 0) {
-      addMsg('🔄 更新完了！ ' + diff + '件の新しいデータがあります','bot');
+      addMsg('✅ 更新完了! ' + diff + '件の新しいデータがあります','bot');
     } else if (diff < 0) {
-      addMsg('🔄 更新完了！ ' + Math.abs(diff) + '件削除されました','bot');
+      addMsg('✅ 更新完了! ' + Math.abs(diff) + '件削除されました','bot');
     } else {
-      addMsg('✅ 最新の状態です（' + data.length + '件）','bot');
+      addMsg('✅ 最新の状態です(' + data.length + '件)','bot');
     }
   } catch (err) {
     addMsg('❌ 更新エラー: ' + err.message,'bot');
   }
   
-  btn.style.animation = '';
+  btn.classList.remove('spinning');
+  btn.disabled = false;
 }
 
 // ===== AUTO RECONNECT =====
@@ -566,8 +609,6 @@ function autoReconnect() {
 async function addEntry() {
   var d = document.getElementById('inputDate').value;
   var s = document.getElementById('inputSession').value;
-  var c = document.getElementById('inputCategory').value;
-  var p = document.getElementById('inputPriority').value;
   var st = document.getElementById('inputStaff').value;
   var co = document.getElementById('inputContent').value;
   
@@ -576,14 +617,16 @@ async function addEntry() {
     return;
   }
   
+  // 初期値は「判定中...」で楽観的保存
   var newEntry = {
     date: d,
     session: s,
-    category: c,
-    priority: p,
+    category: '判定中...',
     staff: st,
     content: co
   };
+  
+  var savedEntry = null;
   
   if (isConnected) {
     try {
@@ -601,23 +644,94 @@ async function addEntry() {
       if (!res.ok) throw new Error('保存エラー');
       
       var inserted = await res.json();
-      data.unshift(inserted[0]);
-      addMsg('✅ Supabaseに保存しました！','bot');
+      savedEntry = inserted[0];
+      data.unshift(savedEntry);
+      addMsg('✅ 保存しました。AIがカテゴリを判定中...','bot');
     } catch (err) {
       alert('保存エラー: ' + err.message);
       return;
     }
   } else {
     newEntry.id = Date.now();
-    data.unshift(newEntry);
-    addMsg('✅ ローカルに保存しました','bot');
+    savedEntry = newEntry;
+    data.unshift(savedEntry);
+    addMsg('✅ ローカルに保存しました。AIがカテゴリを判定中...','bot');
   }
   
   closeModal();
   renderAll();
-  document.getElementById('inputSession').value = '';
-  document.getElementById('inputStaff').value = '';
+  // 前回値を保存(スタッフ名・回)
+  localStorage.setItem('wanvoice_last_staff', st);
+  localStorage.setItem('wanvoice_last_session', s);
+  // 回の履歴を更新(重複排除、最新20件)
+  var history = JSON.parse(localStorage.getItem('wanvoice_session_history') || '[]');
+  history = history.filter(function(x){ return x !== s; });
+  history.unshift(s);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('wanvoice_session_history', JSON.stringify(history));
+  rebuildSessionDatalist();
+  // 内容のみクリア(スタッフ名・回は保持)
   document.getElementById('inputContent').value = '';
+  
+  // バックグラウンドでカテゴリ判定
+  classifyAndUpdate(savedEntry);
+}
+
+// Edge Function でカテゴリ判定 → エントリを更新
+async function classifyAndUpdate(entry) {
+  try {
+    var category = await classifyFeedback(entry.content);
+    entry.category = category;
+    
+    // Supabase 接続中なら PATCH で更新
+    if (isConnected && entry.id) {
+      await fetch(supabaseUrl + '/rest/v1/feedbacks?id=eq.' + entry.id, {
+        method: 'PATCH',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': 'Bearer ' + supabaseKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ category: category })
+      });
+    }
+    
+    renderAll();
+    addMsg('🏷️ カテゴリ判定完了: <b>' + category + '</b>', 'bot');
+  } catch (err) {
+    entry.category = 'その他';
+    renderAll();
+    addMsg('⚠️ カテゴリ判定に失敗しました(「その他」に設定)', 'bot');
+    console.error('classifyAndUpdate error:', err);
+  }
+}
+
+// Edge Function を呼び出してカテゴリを取得
+async function classifyFeedback(content) {
+  if (!isConnected) {
+    // ローカルモードではキーワードベースの簡易判定にフォールバック
+    return classifyLocal(content);
+  }
+  var res = await fetch(supabaseUrl + '/functions/v1/classify-feedback', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + supabaseKey,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ content: content })
+  });
+  if (!res.ok) throw new Error('classify-feedback HTTP ' + res.status);
+  var json = await res.json();
+  return json.category || 'その他';
+}
+
+// ローカルモード用の簡易分類(フォールバック)
+function classifyLocal(content) {
+  var c = content.toLowerCase();
+  if (/エラー|動かな|動作しな|壊れ|故障|トラブル|不具合|バグ|クレーム|苦情/.test(c)) return 'トラブル';
+  if (/良|いい|よかっ|助か|便利|好評|嬉し|感謝|ありがと|最高|満足/.test(c)) return '良かった点';
+  if (/改善|直|欲し|〜すべき|してほしい|見づら|読みにく|小さ|分かりにく|わかりにく/.test(c)) return '改善点';
+  return 'その他';
 }
 
 async function deleteEntry(id) {
@@ -665,66 +779,96 @@ function stopVoice() { isRec = false; try { recognition.abort(); } catch (e) {} 
 function esc(s) { return s ? String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : ''; }
 
 // ===== STATS =====
-function getStats() { var c = {}, p = {}, s = {}; data.forEach(function(d) { c[d.category] = (c[d.category] || 0) + 1; p[d.priority] = (p[d.priority] || 0) + 1; s[d.session] = s[d.session] || { total: 0 }; s[d.session].total++; s[d.session][d.category] = (s[d.session][d.category] || 0) + 1; }); return { cat: c, prio: p, sess: s }; }
+function getStats(source) { var src = source || data; var c = {}, s = {}; src.forEach(function(d) { c[d.category] = (c[d.category] || 0) + 1; s[d.session] = s[d.session] || { total: 0 }; s[d.session].total++; s[d.session][d.category] = (s[d.session][d.category] || 0) + 1; }); return { cat: c, sess: s }; }
 function getSessions() { return [...new Set(data.map(function(d) { return d.session; }))].sort(); }
 
 // ===== SIMILARITY =====
-function calcSim(a, b) { var s1 = a.toLowerCase().replace(/[、。！？\s]/g, ''), s2 = b.toLowerCase().replace(/[、。！？\s]/g, ''); if (s1 === s2) return 1; if (s1.length < 3 || s2.length < 3) return 0; var g1 = new Set(), g2 = new Set(); for (var i = 0; i <= s1.length - 2; i++) g1.add(s1.substring(i, i + 2)); for (var i = 0; i <= s2.length - 2; i++) g2.add(s2.substring(i, i + 2)); var n = 0; g1.forEach(function(x) { if (g2.has(x)) n++; }); var u = g1.size + g2.size - n; return u > 0 ? n / u : 0; }
-function findDups() { var dups = [], checked = new Set(); for (var i = 0; i < data.length; i++) { if (checked.has(data[i].id)) continue; var sim = []; for (var j = i + 1; j < data.length; j++) { if (checked.has(data[j].id)) continue; var s = calcSim(data[i].content, data[j].content); if (s > 0.4) { sim.push({ item: data[j], sim: s }); checked.add(data[j].id); } } if (sim.length) { dups.push({ orig: data[i], sim: sim }); checked.add(data[i].id); } } return dups; }
+function normalizeForSim(s) {
+  if (!s) return '';
+  // 小文字化・記号/空白除去
+  var n = s.toLowerCase().replace(/[、。！？\?\!\.,\s　「」『』()（）\-_/／\\]/g, '');
+  // カタカナ→ひらがな統一
+  n = n.replace(/[\u30a1-\u30f6]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x60); });
+  // 助詞除去(文意を損なわない範囲)
+  n = n.replace(/[はがをにでとのもやへ]/g, '');
+  return n;
+}
+function ngrams(s, n) { var g = new Set(); for (var i = 0; i <= s.length - n; i++) g.add(s.substring(i, i + n)); return g; }
+function jaccard(g1, g2) { if (!g1.size || !g2.size) return 0; var n = 0; g1.forEach(function(x){ if (g2.has(x)) n++; }); var u = g1.size + g2.size - n; return u > 0 ? n / u : 0; }
+function calcSim(a, b) {
+  var s1 = normalizeForSim(a), s2 = normalizeForSim(b);
+  if (s1 === s2) return 1;
+  if (s1.length < 2 || s2.length < 2) return 0;
+  // bi-gram と tri-gram のハイブリッド(短文耐性+意味一致精度)
+  var bi = jaccard(ngrams(s1, 2), ngrams(s2, 2));
+  var tri = (s1.length >= 3 && s2.length >= 3) ? jaccard(ngrams(s1, 3), ngrams(s2, 3)) : bi;
+  // 部分包含ボーナス(短い方が長い方に含まれていたら加点)
+  var shorter = s1.length < s2.length ? s1 : s2;
+  var longer = s1.length < s2.length ? s2 : s1;
+  var contain = longer.indexOf(shorter) !== -1 ? 0.15 : 0;
+  return Math.min(1, bi * 0.35 + tri * 0.55 + contain);
+}
+function findDups() { var dups = [], checked = new Set(); for (var i = 0; i < data.length; i++) { if (checked.has(data[i].id)) continue; var sim = []; for (var j = i + 1; j < data.length; j++) { if (checked.has(data[j].id)) continue; var s = calcSim(data[i].content, data[j].content); if (s > 0.5) { sim.push({ item: data[j], sim: s }); checked.add(data[j].id); } } if (sim.length) { dups.push({ orig: data[i], sim: sim }); checked.add(data[i].id); } } return dups; }
 function getDupIds() { var dups = findDups(), ids = new Set(); dups.forEach(function(g) { ids.add(g.orig.id); g.sim.forEach(function(x) { ids.add(x.item.id); }); }); return ids; }
 
 // ===== RENDER =====
 function renderStats() {
-  var st = getStats(), ss = getSessions(), dups = findDups();
+  var dashData = getDashData();
+  var st = getStats(dashData), dups = findDups();
   document.getElementById('statsGrid').innerHTML =
-    '<div class="stat"><div class="stat-icon">📊</div><div class="stat-val">' + data.length + '</div><div class="stat-label">総件数</div></div>' +
+    '<div class="stat"><div class="stat-icon">📊</div><div class="stat-val">' + dashData.length + '</div><div class="stat-label">総件数</div></div>' +
     '<div class="stat good"><div class="stat-icon">👍</div><div class="stat-val">' + (st.cat['良かった点'] || 0) + '</div><div class="stat-label">良かった点</div></div>' +
     '<div class="stat warn"><div class="stat-icon">✏️</div><div class="stat-val">' + (st.cat['改善点'] || 0) + '</div><div class="stat-label">改善点</div></div>' +
     '<div class="stat bad"><div class="stat-icon">⚠️</div><div class="stat-val">' + (st.cat['トラブル'] || 0) + '</div><div class="stat-label">トラブル</div></div>' +
-    '<div class="stat bad"><div class="stat-icon">🔥</div><div class="stat-val">' + (st.prio['高'] || 0) + '</div><div class="stat-label">優先度高</div></div>' +
-    '<div class="stat"><div class="stat-icon">🔄</div><div class="stat-val">' + dups.length + '</div><div class="stat-label">重複</div></div>';
+    '<div class="stat"><div class="stat-icon">🔥</div><div class="stat-val">' + dups.length + '</div><div class="stat-label">Hot!Voice</div></div>';
 }
 
-function renderBarChart() {
-  var st = getStats(), ss = getSessions();
-  var lg = ''; Object.keys(catHex).forEach(function(c) { lg += '<div class="legend-item"><div class="legend-dot" style="background:' + catHex[c] + '"></div>' + c + '</div>'; });
-  document.getElementById('legend').innerHTML = lg;
-  if (!ss.length) { document.getElementById('barChart').innerHTML = '<div class="empty">データなし</div>'; return; }
-  var max = Math.max.apply(null, ss.map(function(s) { return st.sess[s] ? st.sess[s].total : 0; }));
-  document.getElementById('barY').innerHTML = '<span>' + max + '</span><span>' + Math.round(max / 2) + '</span><span>0</span>';
-  var html = ''; ss.forEach(function(s) { var d = st.sess[s] || { total: 0 }, t = d.total, h = max ? t / max * 120 : 0; html += '<div class="bar-group"><div class="bar-stack" style="height:' + h + 'px">'; Object.keys(catHex).forEach(function(c) { var n = d[c] || 0, sh = t ? n / t * h : 0; html += '<div class="bar-seg" style="height:' + sh + 'px;background:' + catHex[c] + '"></div>'; }); html += '</div><div class="bar-label">' + s.replace('第', '').replace('回', '') + '</div></div>'; });
-  document.getElementById('barChart').innerHTML = html;
+// Dashboard filter state
+var dashSessionFilter = 'all';
+function getDashData() {
+  return dashSessionFilter === 'all' ? data : data.filter(function(d){ return d.session === dashSessionFilter; });
+}
+function onDashFilterChange() {
+  dashSessionFilter = document.getElementById('dashSessionFilter').value;
+  renderStats();
+  renderPieChart();
 }
 
 function renderPieChart() {
-  var st = getStats(), t = data.length;
+  var dashData = getDashData();
+  var st = getStats(dashData), t = dashData.length;
   if (!t) { document.getElementById('pieChart').innerHTML = '<div class="empty">データなし</div>'; return; }
   var gr = [], cur = 0, lg = '';
-  Object.keys(catHex).forEach(function(c) { var n = st.cat[c] || 0, p = n / t * 100; gr.push(catHex[c] + ' ' + cur + '% ' + (cur + p) + '%'); cur += p; lg += '<div class="pie-item"><div class="pie-dot" style="background:' + catHex[c] + '"></div><span>' + c + '</span><span class="pie-pct">' + Math.round(n / t * 100) + '%</span></div>'; });
+  Object.keys(catHex).forEach(function(c) { var n = st.cat[c] || 0, p = n / t * 100; if (p > 0) { gr.push(catHex[c] + ' ' + cur + '% ' + (cur + p) + '%'); cur += p; } lg += '<div class="pie-item"><div class="pie-dot" style="background:' + catHex[c] + '"></div><span>' + c + '</span><span class="pie-pct">' + Math.round(n / t * 100) + '%</span></div>'; });
   document.getElementById('pieChart').innerHTML = '<div class="pie-container"><div class="pie" style="background:conic-gradient(' + gr.join(',') + ')"></div><div class="pie-center"><div class="pie-val">' + t + '</div><div class="pie-label">TOTAL</div></div></div><div class="pie-legend">' + lg + '</div>';
 }
 
-function renderPrioChart() {
-  var st = getStats(), t = data.length, html = '';
-  ['高', '中', '低'].forEach(function(p) { var n = st.prio[p] || 0, pct = t ? Math.round(n / t * 100) : 0; html += '<div class="prio-item"><div class="prio-header"><span>優先度: ' + p + '</span><span>' + n + '件</span></div><div class="prio-bar"><div class="prio-fill" style="width:' + pct + '%;background:' + prioColors[p] + '"></div></div></div>'; });
-  document.getElementById('prioChart').innerHTML = html;
-}
-
 function updateFilters() {
-  var ss = getSessions(), sel = document.getElementById('filterSession');
+  var ss = getSessions();
+  // リスト画面の回フィルター
+  var sel = document.getElementById('filterSession');
   sel.innerHTML = '<option value="all">全ての回</option>';
   ss.forEach(function(s) { sel.innerHTML += '<option value="' + s + '">' + s + '</option>'; });
+  // ダッシュボード画面の回フィルター
+  var dsel = document.getElementById('dashSessionFilter');
+  if (dsel) {
+    var cur = dashSessionFilter;
+    dsel.innerHTML = '<option value="all">全ての回</option>';
+    ss.forEach(function(s) { dsel.innerHTML += '<option value="' + s + '"' + (s === cur ? ' selected' : '') + '>' + s + '</option>'; });
+    // 以前選択した回がデータから消えていたら 'all' に戻す
+    if (cur !== 'all' && ss.indexOf(cur) === -1) { dashSessionFilter = 'all'; dsel.value = 'all'; }
+  }
 }
 
 function renderList() {
   var q = document.getElementById('searchInput').value.toLowerCase(), fs = document.getElementById('filterSession').value, fc = document.getElementById('filterCategory').value, dupIds = getDupIds();
   var filtered = data.filter(function(d) { return (d.content.toLowerCase().indexOf(q) !== -1 || d.staff.toLowerCase().indexOf(q) !== -1) && (fs === 'all' || d.session === fs) && (fc === 'all' || d.category === fc); });
   if (!filtered.length) { document.getElementById('dataList').innerHTML = '<div class="empty">データがありません</div>'; return; }
-  var html = ''; filtered.forEach(function(d) { var isDup = dupIds.has(d.id); html += '<div class="data-item' + (isDup ? ' dup' : '') + '"><div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + esc(d.category) + '</span><span class="tag ' + (d.priority === '高' ? 'bad' : d.priority === '中' ? 'warn' : 'good') + '">' + esc(d.priority) + '</span></div><button class="del-btn" onclick="deleteEntry(' + d.id + ')">削除</button></div><div class="item-content">' + esc(d.content) + '</div><div class="item-meta"><span>📅 ' + esc(d.date) + '</span><span>👤 ' + esc(d.staff) + '</span><span>🏷️ ' + esc(d.session) + '</span></div></div>'; });
+  var html = ''; filtered.forEach(function(d) { var isDup = dupIds.has(d.id); html += '<div class="data-item' + (isDup ? ' dup' : '') + '"><div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + esc(d.category) + '</span></div><button class="del-btn" onclick="deleteEntry(' + d.id + ')">削除</button></div><div class="item-content">' + esc(d.content) + '</div><div class="item-meta"><span>📅 ' + esc(d.date) + '</span><span>👤 ' + esc(d.staff) + '</span><span>🏷️ ' + esc(d.session) + '</span></div></div>'; });
   document.getElementById('dataList').innerHTML = html;
 }
 
-function renderAll() { renderStats(); renderBarChart(); renderPieChart(); renderPrioChart(); updateFilters(); renderList(); }
+function renderAll() { updateFilters(); renderStats(); renderPieChart(); renderList(); }
 
 // ===== AI CHAT =====
 function sendChat() { var input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return; addMsg(msg, 'user'); input.value = ''; showTyping(); setTimeout(function() { hideTyping(); addMsg(generateAI(msg), 'bot'); }, 800); }
@@ -742,7 +886,7 @@ function generateAI(q) {
     summary: ['要約','まとめ','概要','全体','サマリ','総括','ぜんぶ','すべて','全部','どんな感じ','状況','レポート'],
     problem: ['問題','トラブル','課題','困','悪い','ダメ','だめ','改善','直す','なおす','修正','バグ','エラー','クレーム','苦情','不満','心配','懸念','ネガティブ','negative'],
     good: ['良','いい','よい','よかった','ポジティブ','positive','good','グッド','好評','評判','成功','うまく','嬉しい','感謝','ありがと','褒め'],
-    priority: ['優先','緊急','急ぎ','急ぐ','大事','重要','やばい','ヤバイ','すぐ','至急','最優先','プライオリティ'],
+    priority: ['hot','ホット','よく出','多い','頻出','繰り返','重複','似た','類似'],
     trend: ['傾向','推移','分析','変化','比較','トレンド','グラフ','チャート','経過','流れ'],
     staff: ['誰','だれ','スタッフ','担当','人','メンバー','名前'],
     count: ['何件','なんけん','いくつ','数','カウント','件数'],
@@ -762,7 +906,6 @@ function generateAI(q) {
       '👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>' +
       '✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>' +
       '⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>' +
-      '🔥 優先度高: ' + (st.prio['高'] || 0) + '件' +
       (isConnected ? '<br><br>☁️ Supabaseに保存中' : '');
   }
   
@@ -772,7 +915,7 @@ function generateAI(q) {
     if (!probs.length) return '✅ 問題点や改善点の報告はありません！素晴らしいですね👏';
     var r = '⚠️ <b>問題点・改善点（' + probs.length + '件）</b><br><br>';
     probs.slice(0, 5).forEach(function(p) {
-      r += '• ' + esc(p.content) + '<br><small style="color:var(--t3)">' + p.session + ' / ' + p.staff + ' / ' + p.priority + '</small><br><br>';
+      r += '• ' + esc(p.content) + '<br><small style="color:var(--t3)">' + p.session + ' / ' + p.staff + '</small><br><br>';
     });
     if (probs.length > 5) r += '<small>他 ' + (probs.length - 5) + '件...</small>';
     return r;
@@ -790,13 +933,15 @@ function generateAI(q) {
     return r;
   }
   
-  // 優先度高
+  // Hot!Voice(よく出る声)
   if (match(patterns.priority)) {
-    var high = data.filter(function(d) { return d.priority === '高'; });
-    if (!high.length) return '✅ 優先度「高」の項目はありません。落ち着いてますね！';
-    var r = '🔥 <b>優先度高（' + high.length + '件）- 要対応！</b><br><br>';
-    high.forEach(function(h) {
-      r += '• ' + esc(h.content) + '<br><small style="color:var(--t3)">' + h.category + ' / ' + h.session + '</small><br><br>';
+    var dups = findDups();
+    if (!dups.length) return '✅ 似た声の繰り返しはまだありません';
+    dups.sort(function(a, b){ return b.sim.length - a.sim.length; });
+    var r = '🔥 <b>Hot!Voice - よく出ている声</b><br><br>';
+    dups.slice(0, 5).forEach(function(g, i) {
+      var count = g.sim.length + 1;
+      r += (i + 1) + '. ' + esc(g.orig.content) + '<br><small style="color:var(--t3)">' + count + '件の類似 / ' + g.orig.category + '</small><br><br>';
     });
     return r;
   }
@@ -902,8 +1047,34 @@ function generateAI(q) {
 }
 
 // ===== MODAL =====
-function openModal() { document.getElementById('modal').classList.add('show'); document.getElementById('inputDate').value = new Date().toISOString().split('T')[0]; }
-function closeModal() { stopVoice(); document.getElementById('modal').classList.remove('show'); }
+function openModal() {
+  document.getElementById('modal').classList.add('show');
+  document.body.classList.add('modal-open');
+  document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
+  // 前回値を復元
+  var lastStaff = localStorage.getItem('wanvoice_last_staff') || '';
+  var lastSession = localStorage.getItem('wanvoice_last_session') || '';
+  if (!document.getElementById('inputStaff').value) document.getElementById('inputStaff').value = lastStaff;
+  if (!document.getElementById('inputSession').value) document.getElementById('inputSession').value = lastSession;
+  rebuildSessionDatalist();
+}
+function closeModal() { stopVoice(); document.getElementById('modal').classList.remove('show'); document.body.classList.remove('modal-open'); }
+
+// 回のdatalistを履歴から再構築
+function rebuildSessionDatalist() {
+  var dl = document.getElementById('sessionHistory');
+  if (!dl) return;
+  var history = JSON.parse(localStorage.getItem('wanvoice_session_history') || '[]');
+  dl.innerHTML = history.map(function(s){ return '<option value="' + s.replace(/"/g,'&quot;') + '">'; }).join('');
+}
+
+// 接続設定リセット
+function resetSettings() {
+  if (!confirm('接続設定(URL/KEY)をリセットしますか?\n※ フィードバック履歴・スタッフ名・回の履歴は保持されます')) return;
+  localStorage.removeItem('wanvoice_supabase_url');
+  localStorage.removeItem('wanvoice_supabase_key');
+  location.reload();
+}
 
 // ===== NAVIGATION =====
 function switchTab(tab) {
@@ -932,20 +1103,24 @@ function switchTab(tab) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ===== DUPLICATES =====
+// ===== HOT!VOICE (類似グループ) =====
 function renderDuplicates() {
   var dups = findDups();
   var container = document.getElementById('dupList');
   
   if (!dups.length) {
-    container.innerHTML = '<div class="empty">重複するフィードバックはありません</div>';
+    container.innerHTML = '<div class="empty">似た声のグループはまだありません</div>';
     return;
   }
   
+  // 件数が多い順にソート
+  dups.sort(function(a, b){ return b.sim.length - a.sim.length; });
+  
   var html = '';
   dups.forEach(function(g, i) {
+    var count = g.sim.length + 1;
     html += '<div class="dup-group">';
-    html += '<div class="dup-header">🔄 グループ ' + (i + 1) + '（' + (g.sim.length + 1) + '件の類似）</div>';
+    html += '<div class="dup-header">🔥 Hot #' + (i + 1) + ' - ' + count + '件の似た声</div>';
     
     // Original
     html += '<div class="data-item">';
@@ -971,7 +1146,7 @@ function renderDuplicates() {
 
 // ===== CSV =====
 function exportCSV() {
-  var h = ['date', 'session', 'category', 'staff', 'content', 'priority'], csv = h.join(',') + '\n';
+  var h = ['date', 'session', 'category', 'staff', 'content'], csv = h.join(',') + '\n';
   data.forEach(function(d) { csv += h.map(function(k) { return '"' + (d[k] || '') + '"'; }).join(',') + '\n'; });
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv' })); a.download = 'wanvoice_' + new Date().toISOString().split('T')[0] + '.csv'; a.click();
 }
@@ -990,8 +1165,7 @@ document.getElementById('csvImport').addEventListener('change', async function(e
           session: vals[hd.indexOf('session')] || vals[1] || '',
           category: vals[hd.indexOf('category')] || vals[2] || '良かった点',
           staff: vals[hd.indexOf('staff')] || vals[3] || '',
-          content: vals[hd.indexOf('content')] || vals[4] || '',
-          priority: vals[hd.indexOf('priority')] || vals[5] || '中'
+          content: vals[hd.indexOf('content')] || vals[4] || ''
         });
         cnt++;
       }
@@ -1026,6 +1200,7 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 // ===== INIT =====
 initVoice();
 autoReconnect();
+rebuildSessionDatalist();
 </script>
 </body>
 </html>
