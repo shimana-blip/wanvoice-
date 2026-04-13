@@ -269,16 +269,76 @@ label.hbtn{position:relative}
 .item-content{font-size:15px;line-height:1.6;margin-bottom:10px;color:var(--t1)}
 .item-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--t3);font-weight:400}
 
-/* Bottom Nav */
-.bnav{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.88);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--b);border-radius:999px;padding:6px;display:flex;gap:4px;z-index:100;box-shadow:var(--shadow-float),var(--highlight-top)}
-.nav-btn{padding:10px 18px;background:transparent;border:none;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;border-radius:999px;display:flex;align-items:center;gap:8px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);letter-spacing:-0.01em}
-.nav-btn:hover{color:var(--t1);background:var(--card-2)}
-.nav-btn.active{background:#1A4FA0;color:#fff;box-shadow:var(--shadow-brand),var(--highlight-dark)}
-.nav-btn svg{width:16px;height:16px}
-.nav-add{width:48px;height:48px;background:#1A4FA0;border:none;border-radius:50%;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;margin:-4px 4px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-brand),var(--highlight-dark)}
-.nav-add:hover{background:#163F80;transform:translateY(-2px) scale(1.03);box-shadow:var(--shadow-brand-hover),var(--highlight-dark)}
-.nav-add:active{transform:translateY(0) scale(0.97);box-shadow:var(--shadow-brand),var(--highlight-dark)}
+/* ===== Bottom Nav ===== */
+/* 共通：ピル型フローティングバー */
+.bnav{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(15,31,61,0.08);
+  border-radius:999px;
+  padding:16px 8px;
+  display:flex;align-items:center;gap:4px;
+  z-index:100;
+  box-shadow:0 2px 8px rgba(15,31,61,0.06),0 20px 56px rgba(15,31,61,0.14),inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+/* PC: アイコン左・テキスト右の横並び */
+.nav-btn{
+  padding:10px 18px;
+  background:transparent;border:none;
+  color:#475569;
+  font-size:13px;font-weight:600;
+  cursor:pointer;border-radius:999px;
+  display:flex;flex-direction:row;align-items:center;gap:8px;
+  transition:color 0.2s ease,background 0.2s ease;
+  letter-spacing:-0.01em;white-space:nowrap;
+}
+.nav-btn svg{width:18px;height:18px;flex-shrink:0}
+.nav-btn.active{color:#1A4FA0;font-weight:600}
+
+/* +ボタン：角丸長方形（スクリーンショットに合わせ） */
+.nav-add{
+  height:auto;padding:8px 26px;
+  background:#1A4FA0;border:none;
+  border-radius:64px;
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 1px 2px rgba(26,79,160,0.14),0 8px 24px rgba(26,79,160,0.28),inset 0 1px 0 rgba(255,255,255,0.18);
+  flex-shrink:0;margin:0 2px;
+}
+.nav-add:hover{background:#163F80;transform:translateY(-1px);box-shadow:0 2px 6px rgba(26,79,160,0.18),0 16px 36px rgba(26,79,160,0.34),inset 0 1px 0 rgba(255,255,255,0.18)}
+.nav-add:active{transform:translateY(0)}
 .nav-add svg{width:22px;height:22px;stroke-width:2.5}
+
+/* スマホ: アイコン上・テキスト下の縦並び */
+@media(max-width:600px){
+  .bnav{
+    bottom:16px;
+    padding:8px 16px;
+    gap:0;
+    max-width:calc(100vw - 24px);
+  }
+  .nav-btn{
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    padding:8px 24px;
+    font-size:12px;font-weight:600;
+    letter-spacing:0;
+    border-radius:40px;
+    min-width:64px;
+  }
+  .nav-btn svg{width:22px;height:22px}
+  .nav-add{
+    height:52px;padding:0 22px;
+    
+    margin:0 4px;
+  }
+  .nav-add svg{width:24px;height:24px}
+}
 
 /* Modal */
 .modal{display:none;position:fixed;inset:0;background:rgba(17,17,17,0.4);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}
@@ -336,7 +396,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .card,.list-section,.ai-section,.setup-section{padding:22px}
   .setup-section{padding:24px}
   /* Typography */
-  .stat-label,.bar-label,.legend-item,.ai-info p,.ai-status,.voice-status,.item-meta,.del-btn,.nav-btn,.filter-select,.search-box input,.conn-badge,.brs,.pie-item{font-size:13px!important}
+  .stat-label,.bar-label,.legend-item,.ai-info p,.ai-status,.voice-status,.item-meta,.del-btn,.filter-select,.search-box input,.conn-badge,.brs,.pie-item{font-size:13px!important}
   .bar-y,.pie-label{font-size:11px!important}
   .tag{font-size:12px!important}
   .stat-val{font-size:28px}
@@ -347,17 +407,13 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   /* Tap targets */
   .modal-close{width:36px;height:36px;font-size:20px}
   .del-btn{padding:7px 12px;min-height:34px}
-  .nav-btn{padding:10px 14px;min-height:42px}
   .qbtn{padding:9px 14px;min-height:38px}
   .btn{padding:14px;min-height:48px;font-size:15px}
   .hbtn{width:40px;height:40px}
   /* Bar chart */
   .bar-chart{gap:4px}
   .bar-group{min-width:24px}
-  /* Bottom nav */
-  .bnav{bottom:16px;padding:5px;gap:3px;max-width:calc(100vw - 24px)}
-  .nav-btn svg{width:18px;height:18px}
-  .nav-add{width:46px;height:46px}
+  /* Bottom nav - 詳細はメインのmediaquery内で管理 */
   /* Search box */
   .search-box input{width:100%}
   .list-header{flex-direction:column;align-items:stretch}
@@ -498,10 +554,10 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 </main>
 
 <nav class="bnav">
-<button class="nav-btn active" onclick="switchTab('Dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>ダッシュ</button>
+<button class="nav-btn active" onclick="switchTab('Dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ホーム</button>
 <button class="nav-add" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-<button class="nav-btn" onclick="switchTab('List')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>一覧</button>
-<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Hot!Voice</button>
+<button class="nav-btn" onclick="switchTab('List')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>一覧</button>
+<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.09 12.97H11L10 22L20.09 11H13L13 2Z"/></svg>Hot! Voice</button>
 </nav>
 </div>
 
