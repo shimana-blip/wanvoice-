@@ -6,10 +6,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Wan!Voice - Supabase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Base - Calm Optimism palette */
-  --bg:#FAFBFD;
+  --bg:#f4f6fa;
   --card:#FFFFFF;
   --card-2:#F4F6FA;
   --card-hover:#F9FAFC;
@@ -70,26 +73,41 @@
   --highlight-dark:inset 0 1px 0 rgba(255,255,255,0.18);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Hiragino Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100dvh;line-height:1.6;overflow-x:hidden;font-size:15px;-webkit-font-smoothing:antialiased;letter-spacing:-0.003em}
+body{font-family:'Noto Sans JP',-apple-system,BlinkMacSystemFont,'SF Pro Text','Hiragino Sans',sans-serif;background:var(--bg);color:var(--t1);min-height:100dvh;line-height:1.6;overflow-x:hidden;font-size:15px;-webkit-font-smoothing:antialiased;letter-spacing:-0.003em}
 html{overflow-x:hidden}
 body.modal-open{overflow:hidden;position:fixed;width:100%}
 
-.hd{background:rgba(251,251,249,0.85);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--b);padding:16px 24px;position:sticky;top:0;z-index:100}
+.hd{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(--b);padding:14px 20px;position:sticky;top:0;z-index:100}
 .hdc{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}
-.hdb{display:flex;align-items:center;gap:14px}
-.logo{width:38px;height:38px;background:#1A4FA0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.5px;box-shadow:var(--shadow-brand),var(--highlight-dark)}
-.brt{font-size:17px;font-weight:700;color:var(--t1);letter-spacing:-0.02em}
-.brs{font-size:12px;color:var(--t3);letter-spacing:0;font-weight:400;margin-top:2px}
-.hdr{display:flex;gap:6px;align-items:center}
-.conn-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:#fff;border:1px solid var(--b);border-radius:999px;font-size:11px;color:var(--t3);font-weight:600;letter-spacing:0.06em;box-shadow:var(--shadow-card);white-space:nowrap;flex-shrink:0}
-.conn-badge.on{background:rgba(5,150,105,0.06);border-color:rgba(5,150,105,0.22);color:#059669;box-shadow:0 1px 2px rgba(5,150,105,0.08),0 4px 12px rgba(5,150,105,0.1)}
-.conn-badge.on::before{content:'';width:6px;height:6px;min-width:6px;min-height:6px;background:#10B981;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
-.hbtn{width:38px;height:38px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top)}
-.hbtn:hover{background:#fff;border-color:var(--bl);color:var(--t1);transform:translateY(-1px);box-shadow:var(--shadow-card-hover),var(--highlight-top)}
-.hbtn:active{transform:translateY(0);box-shadow:var(--shadow-card),var(--highlight-top)}
-.hbtn svg{width:17px;height:17px}
+.hdb{display:flex;align-items:center;gap:10px}
+.brt{font-size:20px;font-weight:700;color:#1A4FA0;letter-spacing:-0.03em}
+
+/* LIVE バッジ：ブランド名の隣にインライン */
+.conn-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.08em;white-space:nowrap;flex-shrink:0;padding:0}
+.conn-badge::before{content:'';width:7px;height:7px;min-width:7px;min-height:7px;border-radius:50%;background:var(--t4);flex-shrink:0}
+.conn-badge.on{color:#059669}
+.conn-badge.on::before{background:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,0.2)}
+
+/* 右側アクションボタン */
+.hdr{display:flex;gap:4px;align-items:center}
+.hbtn{width:38px;height:38px;background:transparent;border:none;border-radius:var(--r-btn);color:var(--t2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
+.hbtn:hover{background:var(--card-2);color:var(--t1)}
+.hbtn:active{background:var(--card-2)}
+.hbtn svg{width:20px;height:20px}
 .hbtn input{position:absolute;opacity:0;width:0;height:0}
 label.hbtn{position:relative}
+
+/* オーバーフローメニュー（⋯） */
+.overflow-menu-wrap{position:relative}
+.overflow-menu{display:none;position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--b);border-radius:var(--r-card);padding:6px;min-width:180px;box-shadow:var(--shadow-float);z-index:200;animation:menuIn 0.15s cubic-bezier(0.4,0,0.2,1)}
+.overflow-menu.show{display:block}
+@keyframes menuIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:var(--r-btn);color:var(--t2);font-size:14px;font-weight:500;cursor:pointer;text-align:left;transition:all 0.15s;white-space:nowrap}
+.menu-item:hover{background:var(--card-2);color:var(--t1)}
+.menu-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.menu-item.danger{color:#DC2626}
+.menu-item.danger:hover{background:rgba(220,38,38,0.06)}
+.menu-divider{height:1px;background:var(--b);margin:4px 0}
 
 .mn{padding:32px 24px;padding-bottom:calc(120px + var(--sb));max-width:1200px;margin:0 auto}
 
@@ -124,8 +142,56 @@ label.hbtn{position:relative}
 .icon-lg{width:22px;height:22px}
 
 /* Stats */
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
-@media(min-width:600px){.stats{grid-template-columns:repeat(5,1fr);gap:12px}}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+
+/* ダッシュボード セクション */
+.dash-section{border-radius:var(--r-card);padding:16px 24px 32px}
+.dash-filter-wrap{position:relative;display:inline-flex;align-items:center;margin-bottom:8px;align-self:flex-start}
+.dash-filter-select{font-size:14px;font-weight:500;color:var(--t1);background:transparent;border:none;box-shadow:none;padding:8px 4px;cursor:pointer;font-family:inherit;-webkit-appearance:none;appearance:none;padding-right:20px;width:auto;max-width:calc(100vw - 80px);text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;background-size:16px}
+.dash-filter-select:hover,.dash-filter-select:focus{box-shadow:none;background-color:transparent;outline:none}
+
+/* 件数カード */
+.stats-inline{display:flex;flex-direction:column;gap:9px}
+.stat-row-top,.stat-row-bottom{display:flex;gap:9px}
+.stat-row-top .stat,.stat-row-bottom .stat{
+  flex:1;padding:16px 10px;margin-bottom:0;
+  background:#fff;border:none;box-shadow:none;
+  border-radius:8px;
+}
+.stat-row-top .stat:hover,.stat-row-bottom .stat:hover{transform:none;box-shadow:none;border-color:transparent}
+.stats-inline .stat-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.stats-inline .stat-icon{
+  width:22px;height:22px;
+  border-radius:40px;margin-bottom:0;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.stats-inline .stat-icon svg{width:14px;height:14px}
+.stats-inline .stat-label{font-size:12px;color:var(--t1);font-weight:500;margin-top:0}
+.stats-inline .stat-val{font-size:36px;font-weight:700;letter-spacing:-0.03em;line-height:1;color:#000;text-align:center;width:100%}
+
+/* アイコン背景色 */
+.stats-inline .stat .stat-icon{background:#e8f1fe;color:#1A4FA0}
+.stats-inline .stat.hot .stat-icon{background:#fff2e8;color:#F97316}
+.stats-inline .stat.good .stat-icon{background:#eaf8f3;color:#10B981}
+.stats-inline .stat.warn .stat-icon{background:#fef4e4;color:#F59E0B}
+.stats-inline .stat.bad .stat-icon{background:#fdeeee;color:#DC2626}
+
+/* パイチャートカード */
+.dash-pie-card{background:#fff;border:none;border-radius:12px;padding:21px 20px;margin-top:9px;box-shadow:none}
+.dash-pie-card:hover{transform:none;box-shadow:none;border-color:transparent}
+.dash-pie-title{font-size:14px;font-weight:500;color:#45464E;margin-bottom:12px}
+
+@media(min-width:600px){
+  .stats-inline{flex-direction:row;gap:9px}
+  .stat-row-top{flex:2}
+  .stat-row-bottom{flex:3}
+}
+@media(max-width:600px){
+  .dash-section{margin-left:-16px;margin-right:-16px;border-radius:0;padding:16px 16px 24px}
+  .ai-section{border-radius:0;border-left:none;border-right:none;padding:24px 16px}
+  .ai-welcome-desc br{display:none}
+  .stats-inline .stat-val{font-size:32px}
+}
 .stat{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:22px 18px;text-align:left;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top);cursor:default}
 .stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover),var(--highlight-top);border-color:var(--bl)}
 .stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;background:rgba(15,31,61,0.06);color:var(--t2)}
@@ -156,6 +222,7 @@ label.hbtn{position:relative}
 .item-meta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.7}
 .item-meta span{display:inline-flex;align-items:center;gap:5px}
 .dup-header svg{width:14px;height:14px;stroke:var(--hot);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.dup-header-left svg{width:14px;height:14px;stroke:var(--hot);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 
 .bar-wrap{position:relative;padding-left:32px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 .bar-wrap::-webkit-scrollbar{height:4px}
@@ -194,80 +261,146 @@ label.hbtn{position:relative}
 .pie-dot{width:10px;height:10px;border-radius:2px}
 .pie-pct{margin-left:auto;color:var(--t2);font-weight:600;font-variant-numeric:tabular-nums}
 
+/* ===== ダッシュボード2カラムレイアウト ===== */
+.dash-layout{display:flex;flex-direction:column;gap:20px}
+@media(min-width:900px){
+  .dash-layout{flex-direction:row;align-items:stretch}
+  .dash-section{flex:1;min-width:0;margin-bottom:0;background:#ffffff;border-radius:var(--r-card)}
+  .ai-section{width:340px;flex-shrink:0}
+}
+
 /* AI Chat */
-.ai-section{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:28px;margin-bottom:20px;box-shadow:var(--shadow-card),var(--highlight-top);transition:all 0.25s cubic-bezier(0.4,0,0.2,1)}
-.ai-section:hover{box-shadow:var(--shadow-card-hover),var(--highlight-top)}
-.ai-header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.ai-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#6366F1,#8B5CF6);box-shadow:0 1px 2px rgba(99,102,241,0.14),0 8px 24px rgba(99,102,241,0.28),var(--highlight-dark)}
+.ai-section{background:#fff;border-radius:var(--r-card);padding:28px;display:flex;flex-direction:column}
+.ai-header{display:flex;align-items:center;gap:12px;margin-bottom:0;padding-bottom:20px}
+.ai-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#6366F1,#8B5CF6);flex-shrink:0;box-shadow:0 1px 2px rgba(99,102,241,0.14),0 8px 24px rgba(99,102,241,0.28)}
 .ai-avatar svg{width:100%;height:100%}
-.ai-info h3{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-0.01em}
-.ai-info p{font-size:13px;color:var(--t3);margin-top:2px}
-.ai-status{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#059669;font-weight:600;letter-spacing:0.06em;white-space:nowrap;flex-shrink:0}
-.ai-status::before{content:'';width:6px;height:6px;min-width:6px;min-height:6px;background:#10B981;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.9)}}
+.ai-info h3{font-size:16px;font-weight:700;color:var(--t1);letter-spacing:-0.02em}
+.ai-info p{font-size:13px;color:var(--t3);margin-top:1px}
 
-.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
-.qbtn{padding:8px 14px;background:#fff;border:1px solid var(--b);border-radius:999px;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);letter-spacing:-0.005em;box-shadow:var(--shadow-card)}
-.qbtn:hover{border-color:var(--bl);color:var(--t1);transform:translateY(-1px);box-shadow:var(--shadow-card-hover)}
-.qbtn:active{transform:translateY(0);box-shadow:var(--shadow-card)}
-.qbtn.qbtn-summary svg{stroke:var(--t2)}
-.qbtn.qbtn-good svg{stroke:#10B981}
-.qbtn.qbtn-warn svg{stroke:#D97706}
-.qbtn.qbtn-bad svg{stroke:#DC2626}
-.qbtn.qbtn-hot svg{stroke:#F97316}
-.qbtn.qbtn-trend svg{stroke:#8B5CF6}
+/* 初回ウェルカム画面 */
+.ai-welcome{text-align:center;padding:24px 8px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ai-welcome-title{font-size:18px;font-weight:700;color:var(--t1);line-height:1.5;margin-bottom:12px}
+.ai-welcome-desc{font-size:13px;color:var(--t3);line-height:1.7;margin-bottom:20px}
+.ai-welcome .quick-btns{justify-content:center}
 
-.chat-box{max-height:280px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
-.msg{max-width:85%;padding:12px 16px;border-radius:var(--r-lg);font-size:14px;line-height:1.6;animation:msgIn 0.3s ease}
+/* チャットエリア */
+.chat-area{flex:1;display:none;flex-direction:column}
+.chat-area.active{display:flex}
+.chat-box{max-height:280px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;flex:1}
+.msg{max-width:85%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;animation:msgIn 0.3s ease}
 @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.msg.bot{background:var(--card-2);color:var(--t1);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(17,17,17,0.03)}
-.msg.user{background:#1A4FA0;color:#fff;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:var(--shadow-brand),var(--highlight-dark)}
+.msg.bot{background:#f4f6fa;color:var(--t1);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:#1A4FA0;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+
+/* クイックボタン */
+.quick-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0}
+.qbtn{padding:8px 14px;background:#fff;border:1px solid var(--b);border-radius:999px;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:-0.005em}
+.qbtn:hover{border-color:var(--bl);color:var(--t1)}
+.qbtn:active{background:var(--card-2)}
+.qbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
 .typing{display:flex;gap:5px;padding:12px 16px}
 .typing span{width:7px;height:7px;background:var(--t3);border-radius:50%;animation:bounce 1.4s infinite}
 .typing span:nth-child(2){animation-delay:0.2s}
 .typing span:nth-child(3){animation-delay:0.4s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
 
-.chat-input-wrap{display:flex;gap:10px}
-.chat-input{flex:1;padding:12px 16px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
-.chat-input:focus{outline:none;border-color:var(--a);background:#fff;box-shadow:0 0 0 3px rgba(26,79,160,0.1),0 1px 2px rgba(26,79,160,0.05)}
-.chat-input::placeholder{color:var(--t4)}
-.chat-send{width:44px;height:44px;background:#1A4FA0;border:none;border-radius:var(--r-btn);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-brand),var(--highlight-dark)}
-.chat-send:hover{background:#163F80;transform:translateY(-1px);box-shadow:var(--shadow-brand-hover),var(--highlight-dark)}
-.chat-send:active{transform:translateY(0);box-shadow:var(--shadow-brand),var(--highlight-dark)}
-.chat-send svg{width:18px;height:18px}
+.chat-input-wrap{display:flex;align-items:center;gap:0;margin-top:auto;border:1px solid var(--b);border-radius:10px;padding:4px 4px 4px 14px;background:#fff;transition:border-color 0.2s}
+.chat-input-wrap:focus-within{border-color:var(--a)}
+.chat-input{flex:1;padding:8px 0;background:transparent;border:none;color:var(--t1);font-size:16px;font-family:inherit;outline:none}
+.chat-input::placeholder{color:#c0c0c0}
+.chat-send{width:32px;height:32px;background:#1A4FA0;border:none;border-radius:8px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
+.chat-send:hover{background:#163F80}
+.chat-send:active{transform:scale(0.95)}
+.chat-send svg{width:14px;height:14px}
 
 /* Data List */
-.list-section{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:28px;box-shadow:var(--shadow-card),var(--highlight-top);transition:all 0.25s cubic-bezier(0.4,0,0.2,1)}
-.list-section:hover{box-shadow:var(--shadow-card-hover),var(--highlight-top)}
-.list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.list-title{font-size:16px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
-.list-filters{display:flex;gap:8px;flex-wrap:wrap}
-.filter-select{padding:9px 12px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card);max-width:100%}
-.filter-select:focus,.filter-select:hover{outline:none;border-color:var(--bl);color:var(--t1);box-shadow:var(--shadow-card-hover)}
-.search-box{position:relative}
-.search-box input{padding:9px 12px 9px 36px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:13px;width:200px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
-.search-box input:focus{outline:none;border-color:var(--a);box-shadow:0 0 0 3px rgba(26,79,160,0.1),var(--shadow-card)}
-.search-box input::placeholder{color:var(--t4)}
-.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--t3)}
+/* ===== 一覧タブ ===== */
+/* 固定ヘッダーエリア */
+.list-sticky{
+  background:#fff;
+  border-bottom:1px solid #cbd5e1;
+  padding:24px 21px;
+  box-sizing:border-box;
+  flex-shrink:0;
+}
+/* PC: ヘッダー横並び */
+@media(min-width:900px){
+  .list-sticky{padding:24px 40px;border-bottom:none;background:#f4f6fa;position:sticky;top:57px;z-index:50}
+  .list-sticky-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1200px;margin:0 auto}
+  .list-sticky-inner .list-title{margin-bottom:0;flex-shrink:0;font-size:24px}
+  .list-sticky-inner .list-filters-wrap{display:flex;align-items:center;gap:12px;flex:0;white-space:nowrap}
+  .list-sticky-inner .search-box{margin-bottom:0;width:348px}
+  .list-sticky-inner .search-box input{background-color:#fff;border:1px solid rgba(157,170,189,0.2);font-size:14px}
+  .list-sticky-inner .search-box input:focus{border-color:var(--a)}
+  .list-sticky-inner .list-filters{flex-shrink:0}
+  .list-sticky-inner .filter-select{background-color:#fff;border:1px solid rgba(157,170,189,0.2);width:169px;flex:none}
+}
+@media(max-width:899px){
+  .list-sticky-inner .list-filters-wrap{display:contents}
+}
+#tabList{margin:-32px -24px 0;width:calc(100% + 48px)}
+#tabDup{margin:-32px -24px 0;width:calc(100% + 48px)}
+@media(max-width:600px){#tabList{margin:-20px -16px 0;width:calc(100% + 32px)}#tabDup{margin:-20px -16px 0;width:calc(100% + 32px)}}
+.list-title{font-size:20px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.list-title svg{width:32px;height:32px;stroke:var(--t1);fill:none;stroke-width:2;flex-shrink:0}
 
-.data-list{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow-y:auto;padding:4px}
-.data-item{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:20px;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top)}
-.data-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover),var(--highlight-top);border-color:var(--bl)}
+/* 検索 */
+.search-box{position:relative;width:100%;margin-bottom:12px}
+.search-box input{width:100%;padding:8px 8px 8px 32px;background:#f5f5f5;border:none;border-radius:6px;color:var(--t1);font-size:13px;font-weight:500;font-family:inherit;transition:all 0.2s;outline:none}
+.search-box input::placeholder{color:#d9d9d9;letter-spacing:0.05em}
+.search-box input:focus{background:#f0f0f0}
+.search-box svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#d9d9d9;stroke:#d9d9d9}
+
+/* フィルター行 */
+.list-filters{display:flex;gap:9px}
+.filter-select{flex:1;padding:8px 8px;background:#f5f5f5;border:none;border-radius:6px;color:var(--t2);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;background-size:20px;padding-right:28px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filter-select:focus{background-color:#f0f0f0}
+
+/* カードエリア */
+.list-body{background:#f4f6fa;padding:24px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px;box-sizing:border-box;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.data-list{display:flex;flex-direction:column;gap:16px}
+.data-item{background:#fff;border:none;border-radius:8px;padding:24px 20px;box-shadow:0 4px 16px 0 rgba(157,170,189,0.2);max-width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:16px}
+
+/* PC: 個別カード（Figma通り） */
+@media(min-width:900px){
+  .list-body{padding:24px 40px;max-width:1200px;margin:0 auto;width:100%;overflow-y:visible;flex:none}
+  .data-list{gap:16px}
+  .data-item{border:1px solid rgba(157,170,189,0.2);border-radius:8px;box-shadow:0 4px 16px 0 rgba(157,170,189,0.2);padding:24px 20px}
+}
+
+/* もっと見るボタン */
+.load-more-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:14px;background:#1A4FA0;border:1px solid var(--b);border-radius:8px;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.load-more-btn:hover{background:var(--card-2);color:var(--t1);border-color:var(--bl)}
+@media(min-width:900px){
+  .load-more-btn{border:1px solid rgba(157,170,189,0.2)}
+}
 .data-item.dup{border-left:3px solid var(--hot)}
-.item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+.item-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .item-tags{display:flex;gap:6px;flex-wrap:wrap}
-.tag{padding:3px 10px;border-radius:var(--r-tag);font-size:12px;font-weight:600;letter-spacing:-0.005em}
-.tag.good{background:rgba(16,185,129,0.1);color:#059669}
-.tag.warn{background:rgba(245,158,11,0.1);color:#B45309}
-.tag.bad{background:rgba(220,38,38,0.08);color:#DC2626}
+/* カテゴリタグ：アイコン付き */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:4px;font-size:14px;font-weight:500;letter-spacing:0}
+.tag svg{width:16px;height:16px;flex-shrink:0}
+.tag.good{background:#eaf8f3;color:#059669}
+.tag.warn{background:#fef4e4;color:#a58000}
+.tag.bad{background:#fdeeee;color:#ce0000}
 .tag.other{background:rgba(139,92,246,0.1);color:#7C3AED}
 .tag.pending{background:rgba(148,163,184,0.12);color:#64748B;animation:pulse 1.5s ease-in-out infinite}
+.item-content{font-size:15px;line-height:1.6;color:#000;word-break:break-word;overflow-wrap:anywhere}
+.item-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:#9daabd;font-weight:400}
+.item-meta span{display:inline-flex;align-items:center;gap:2px}
+.item-meta svg{width:16px;height:16px;stroke:#9daabd;fill:none;stroke-width:2;flex-shrink:0;opacity:1}
+
+/* list-sectionはHot!Voice用に残す */
+.list-section{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:28px;box-shadow:var(--shadow-card),var(--highlight-top);max-width:100%;box-sizing:border-box}
+.list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+
+/* 管理タブ：セッション一覧アイテム */
+.session-item{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:14px 16px;box-shadow:var(--shadow-card),var(--highlight-top);display:flex;justify-content:space-between;align-items:center;box-sizing:border-box}
+
+/* 削除ボタン（Hot!Voice用に残す） */
 .del-btn{background:#fff;border:1px solid var(--b);color:var(--t3);padding:6px 12px;border-radius:var(--r-tag);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
-.del-btn:hover{background:rgba(220,38,38,0.06);border-color:rgba(220,38,38,0.2);color:#DC2626;transform:translateY(-1px);box-shadow:0 2px 4px rgba(220,38,38,0.06),0 4px 12px rgba(220,38,38,0.08)}
+.del-btn:hover{background:rgba(220,38,38,0.06);border-color:rgba(220,38,38,0.2);color:#DC2626;transform:translateY(-1px)}
 .del-btn:active{transform:translateY(0)}
-.item-content{font-size:15px;line-height:1.6;margin-bottom:10px;color:var(--t1)}
-.item-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--t3);font-weight:400}
 
 /* ===== Bottom Nav ===== */
 /* 共通：ピル型フローティングバー */
@@ -360,6 +493,22 @@ label.hbtn{position:relative}
 .form-input{width:100%;min-width:0;padding:12px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
 .form-input:focus{outline:none;border-color:var(--a);background:#fff;box-shadow:0 0 0 3px rgba(26,79,160,0.1),0 1px 2px rgba(26,79,160,0.05)}
 textarea.form-input{resize:none;min-height:120px;line-height:1.6}
+/* カスタムドロップダウン（スタッフ名選択） */
+.custom-select-wrap{position:relative}
+.custom-select-btn{width:100%;padding:12px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1)}
+.custom-select-btn:focus,.custom-select-btn.open{outline:none;border-color:var(--a);background:#fff;box-shadow:0 0 0 3px rgba(26,79,160,0.1),0 1px 2px rgba(26,79,160,0.05)}
+.custom-select-btn svg{width:16px;height:16px;stroke:var(--t3);fill:none;stroke-width:2;transition:transform 0.2s;flex-shrink:0}
+.custom-select-btn.open svg{transform:rotate(180deg)}
+.custom-select-dropdown{display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--bl);border-radius:var(--r-btn);box-shadow:var(--shadow-float);z-index:300;overflow:hidden;animation:menuIn 0.15s cubic-bezier(0.4,0,0.2,1)}
+.custom-select-dropdown.open{display:block}
+.custom-select-option{padding:11px 14px;font-size:14px;color:var(--t1);cursor:pointer;transition:background 0.1s;display:flex;align-items:center;gap:8px}
+.custom-select-option:hover{background:var(--card-2)}
+.custom-select-option.selected{color:var(--a);font-weight:600}
+.custom-select-option.selected::before{content:'✓';font-size:12px;color:var(--a)}
+.custom-select-option:not(.selected)::before{content:'';display:inline-block;width:12px}
+.custom-select-option.add-new{color:var(--a);border-top:1px solid var(--b);font-weight:500}
+.custom-select-option.add-new::before{content:'+';font-size:14px;color:var(--a);font-weight:700}
+
 .voice-wrap{position:relative}
 .voice-wrap textarea{padding-right:56px}
 .voice-btn{position:absolute;right:10px;bottom:10px;width:36px;height:36px;background:#fff;border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
@@ -379,9 +528,31 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 
 .loading{text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:500}
 .loading::after{content:'';display:inline-block;width:16px;height:16px;border:2px solid var(--b);border-top-color:var(--t1);border-radius:50%;animation:spin 0.8s linear infinite;margin-left:10px;vertical-align:middle}
-.dup-group{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:24px;margin-bottom:14px;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top)}
-.dup-group:hover{border-color:var(--bl);transform:translateY(-2px);box-shadow:var(--shadow-card-hover),var(--highlight-top)}
-.dup-header{font-size:13px;font-weight:600;color:var(--hot);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px;letter-spacing:-0.01em}
+/* Hot!Voice カード */
+.dup-group{background:#fff;border:none;border-radius:8px;padding:24px 20px;margin-bottom:0;box-shadow:0 4px 16px 0 rgba(157,170,189,0.2)}
+.dup-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid #f0f1f3;margin-bottom:0;gap:8px}
+.dup-header-left{font-size:14px;font-weight:700;color:#fa7c25}
+.dup-sim-badge{display:inline-flex;align-items:center;justify-content:center;background:#fff2e8;color:#f97315;font-size:14px;font-weight:700;padding:4px 12px;border-radius:40px;white-space:nowrap;flex-shrink:0}
+.dup-content-area{display:flex;flex-direction:column;gap:16px;padding-top:24px}
+.dup-summary{font-size:15px;line-height:1.6;color:#000;word-break:break-word}
+.dup-toggle{display:flex;align-items:center;gap:4px;width:100%;background:#f5f5f5;border:none;border-radius:6px;padding:16px;font-size:14px;font-weight:500;color:var(--t2);cursor:pointer;font-family:inherit;transition:all 0.2s}
+.dup-toggle:hover{background:#efefef}
+.dup-toggle svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;transition:transform 0.2s;flex-shrink:0}
+.dup-toggle.open svg{transform:rotate(180deg)}
+.dup-details{display:none;flex-direction:column;gap:16px}
+.dup-details.collapsed{display:none}
+.dup-details.expanded{display:flex;padding:0 16px}
+
+/* 展開時のグレー背景ラッパー */
+.dup-expandable{margin-top:16px}
+.dup-expandable.open{background:#f5f5f5;border-radius:6px;padding:0 0 16px 0}
+.dup-expandable.open .dup-toggle{background:transparent;border:none;border-radius:0;padding:16px}
+.dup-details .data-item{background:#fff;border:none;border-radius:8px;padding:24px 20px;box-shadow:none;display:flex;flex-direction:column;gap:14px}
+
+/* Hot!Voiceタブ背景 */
+.dup-tab-title{padding:24px 40px}
+.dup-tab-title h2{font-size:24px;font-weight:500;color:var(--t1);padding:4px 8px}
+.dup-tab-body{background:#f4f6fa;padding:24px 40px;display:flex;flex-direction:column;gap:24px;min-height:200px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hbtn svg{transition:transform 0.3s}
 #refreshBtn.spinning{color:var(--t1)}
@@ -393,15 +564,17 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 /* ===== Mobile optimization ===== */
 @media(max-width:600px){
   .mn{padding:20px 16px;padding-bottom:calc(120px + var(--sb))}
+  .list-sticky{padding:20px 16px}
+  .list-body{padding:20px 16px}
   .card,.list-section,.ai-section,.setup-section{padding:22px}
   .setup-section{padding:24px}
   /* Typography */
-  .stat-label,.bar-label,.legend-item,.ai-info p,.ai-status,.voice-status,.item-meta,.del-btn,.filter-select,.search-box input,.conn-badge,.brs,.pie-item{font-size:13px!important}
+  .stat-label,.bar-label,.legend-item,.ai-info p,.ai-status,.voice-status,.item-meta,.del-btn,.conn-badge,.brs,.pie-item{font-size:0.75rem!important}
   .bar-y,.pie-label{font-size:11px!important}
   .tag{font-size:12px!important}
   .stat-val{font-size:28px}
   .card-title{font-size:15px}
-  .list-title{font-size:16px}
+  .list-title{font-size:24px}
   .modal-title{font-size:20px}
   .item-content{font-size:15px}
   /* Tap targets */
@@ -418,11 +591,10 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .search-box input{width:100%}
   .list-header{flex-direction:column;align-items:stretch}
   .list-filters{width:100%}
-  .filter-select,.search-box{flex:1}
+  .filter-select,.search-box{flex:1;min-width:0;max-width:100%}
   /* Header brand */
   .brs{display:none}
-  .brt{font-size:16px}
-  .hd{padding:14px 18px}
+  .hd{padding:14px 16px}
   /* Form */
   .form-row{gap:12px}
   .modal-content{max-height:92vh;padding:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
@@ -431,6 +603,8 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .stat-val{font-size:26px}
   /* Pie */
   .pie-wrap.pie-main{gap:24px;padding:16px 0}
+  .dup-tab-title{padding: 20px 16px;}
+  .dup-tab-body{padding: 20px 16px;}
 }
 </style>
 </head>
@@ -439,18 +613,41 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <header class="hd">
 <div class="hdc">
 <div class="hdb">
-<div class="logo">W!</div>
-<div>
 <div class="brt">Wan!Voice</div>
-<div class="brs">Let's speak up your Wan!</div>
-</div>
+<div class="conn-badge" id="connStatus">OFF</div>
 </div>
 <div class="hdr">
-<div class="conn-badge" id="connStatus">OFF</div>
-<button class="hbtn" onclick="refreshData()" title="データ更新" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
-<label class="hbtn" title="インポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><input type="file" id="csvImport" accept=".csv"></label>
-<button class="hbtn" onclick="exportCSV()" title="エクスポート"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
-<button class="hbtn" onclick="resetSettings()" title="接続設定リセット"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+<!-- 更新ボタン -->
+<button class="hbtn" onclick="refreshData()" title="データ更新" id="refreshBtn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+</button>
+<!-- ⋯ オーバーフローメニュー -->
+<div class="overflow-menu-wrap">
+<button class="hbtn" onclick="toggleOverflowMenu()" id="overflowBtn" title="設定">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+</button>
+<div class="overflow-menu" id="overflowMenu">
+<button class="menu-item" onclick="switchTab('Admin');closeOverflowMenu()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+回を管理
+</button>
+<div class="menu-divider"></div>
+<label class="menu-item">
+<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+インポート
+<input type="file" id="csvImport" accept=".csv" style="position:absolute;opacity:0;width:0;height:0">
+</label>
+<button class="menu-item" onclick="exportCSV();closeOverflowMenu()">
+<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+エクスポート
+</button>
+<div class="menu-divider"></div>
+<button class="menu-item danger" onclick="resetSettings();closeOverflowMenu()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+接続設定リセット
+</button>
+</div>
+</div>
 </div>
 </div>
 </header>
@@ -489,65 +686,158 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 
 <!-- Tab: Dashboard -->
 <div id="tabDash">
-<!-- Stats -->
-<div class="stats" id="statsGrid"></div>
+<div class="dash-layout">
 
-<!-- Main Chart: Category Pie with Session Filter -->
-<div class="card" style="margin-bottom:20px">
-<div class="card-header">
-<div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> カテゴリ分布</div>
-<select class="filter-select" id="dashSessionFilter" onchange="onDashFilterChange()"><option value="all">全ての回</option></select>
-</div>
-<div class="pie-wrap pie-main" id="pieChart"></div>
+<!-- 左：ダッシュボードセクション -->
+<div class="dash-section">
+  <div class="dash-filter-wrap">
+    <select class="dash-filter-select" id="dashSessionFilter" onchange="onDashFilterChange()"><option value="all">全ての回</option></select>
+  </div>
+  <div id="statsGrid" class="stats-inline"></div>
+  <div class="dash-pie-card">
+    <div class="dash-pie-title">カテゴリー分布</div>
+    <div class="pie-wrap pie-main" id="pieChart"></div>
+  </div>
 </div>
 
-<!-- AI Chat -->
+<!-- 右：Wan!アシスタント -->
 <div class="ai-section">
-<div class="ai-header">
-<div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6366F1"/><stop offset="100%" style="stop-color:#8B5CF6"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><path d="M35 40v20l15 12V28L35 40z" fill="#fff"/><rect x="28" y="40" width="10" height="20" rx="2" fill="#fff"/><path d="M58 35c4 4 6 9 6 15s-2 11-6 15" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M66 28c6 6 9 14 9 22s-3 16-9 22" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
-<div class="ai-info"><h3>Wan!アシスタント</h3><p>フィードバック分析をAIがサポート</p></div>
-<div class="ai-status">ONLINE</div>
+  <div class="ai-header">
+    <div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6366F1"/><stop offset="100%" style="stop-color:#8B5CF6"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><path d="M35 40v20l15 12V28L35 40z" fill="#fff"/><rect x="28" y="40" width="10" height="20" rx="2" fill="#fff"/><path d="M58 35c4 4 6 9 6 15s-2 11-6 15" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M66 28c6 6 9 14 9 22s-3 16-9 22" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
+    <div class="ai-info"><h3>Wan!アシスタント</h3><p>フィードバック分析をAIがサポート</p></div>
+  </div>
+
+  <!-- ウェルカム画面（初回表示） -->
+  <div class="ai-welcome" id="aiWelcome">
+    <div class="ai-welcome-title">こんにちは！<br>Wan!アシスタントです🐕</div>
+    <div class="ai-welcome-desc">蓄積されたユーザーボイスをAIが分析し、<br>改善のヒントを抽出します。<br>現在、<strong id="aiDataCount">0</strong>件のフィードバックが分析可能です。</div>
+    <div class="quick-btns">
+      <button class="qbtn" onclick="askBot('要約して')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>要約</button>
+      <button class="qbtn" onclick="askBot('問題点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>問題点</button>
+      <button class="qbtn" onclick="askBot('良かった点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>良い点</button>
+      <button class="qbtn" onclick="askBot('hotな声は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Hot!Voice</button>
+      <button class="qbtn" onclick="askBot('傾向を教えて')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>傾向</button>
+    </div>
+  </div>
+
+  <!-- チャットエリア（メッセージ送信後に表示） -->
+  <div class="chat-area" id="chatArea">
+    <div class="chat-box" id="chatBox"></div>
+  </div>
+
+  <div class="chat-input-wrap">
+    <input type="text" class="chat-input" id="chatInput" placeholder="質問を入力" onkeypress="if(event.key==='Enter')sendChat()">
+    <button class="chat-send" onclick="sendChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+  </div>
 </div>
-<div class="quick-btns">
-<button class="qbtn qbtn-summary" onclick="askBot('要約して')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>全体要約</button>
-<button class="qbtn qbtn-bad" onclick="askBot('問題点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>問題点</button>
-<button class="qbtn qbtn-good" onclick="askBot('良かった点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>良い点</button>
-<button class="qbtn qbtn-hot" onclick="askBot('hotな声は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Hot!Voice</button>
-<button class="qbtn qbtn-trend" onclick="askBot('傾向を教えて')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>傾向</button>
-</div>
-<div class="chat-box" id="chatBox">
-<div class="msg bot">こんにちは！Wan!アシスタントです🐕<br>Supabaseと連携中！データはクラウドに保存されます。</div>
-</div>
-<div class="chat-input-wrap">
-<input type="text" class="chat-input" id="chatInput" placeholder="質問を入力..." onkeypress="if(event.key==='Enter')sendChat()">
-<button class="chat-send" onclick="sendChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-</div>
+
 </div>
 </div>
 
 <!-- Tab: Data List -->
-<div id="tabList" class="hidden">
-<div class="list-section">
-<div class="list-header">
-<div class="list-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> フィードバック一覧</div>
-<div class="list-filters">
-<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="searchInput" placeholder="検索..." oninput="renderList()"></div>
-<select class="filter-select" id="filterSession" onchange="renderList()"></select>
-<select class="filter-select" id="filterCategory" onchange="renderList()"><option value="all">全カテゴリ</option><option value="良かった点">良かった点</option><option value="改善点">改善点</option><option value="トラブル">トラブル</option><option value="その他">その他</option></select>
+<div id="tabList" class="hidden" style="flex-direction:column">
+<!-- 固定ヘッダー -->
+<div class="list-sticky">
+<div class="list-sticky-inner">
+  <div class="list-title">フィードバック一覧</div>
+  <div class="list-filters-wrap">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="検索" oninput="renderList()">
+    </div>
+    <div class="list-filters">
+      <select class="filter-select" id="filterSession" onchange="renderList()"></select>
+      <select class="filter-select" id="filterCategory" onchange="renderList()"><option value="all">全カテゴリ</option><option value="良かった点">良かった点</option><option value="改善点">改善点</option><option value="トラブル">トラブル</option><option value="その他">その他</option></select>
+    </div>
+  </div>
 </div>
 </div>
-<div class="data-list" id="dataList"></div>
+<!-- カードエリア -->
+<div class="list-body">
+  <div class="data-list" id="dataList"></div>
 </div>
 </div>
 
 <!-- Tab: Duplicates -->
 <div id="tabDup" class="hidden">
+<div class="dup-tab-title"><h2>Hot! Voice -  よく出てる声</h2></div>
+<div class="dup-tab-body" id="dupList"></div>
+</div>
+
+<!-- Tab: Admin -->
+<div id="tabAdmin" class="hidden">
+
+<!-- 管理タブヘッダー -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+  <button onclick="switchTab('Dash')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--t2);font-size:14px;font-weight:500;cursor:pointer;padding:6px 0;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg>
+    ホームに戻る
+  </button>
+  <span style="font-size:18px;font-weight:700;color:var(--t1);letter-spacing:-0.02em">回の管理</span>
+</div>
+
+<!-- 回を追加 -->
+<div class="list-section" style="margin-bottom:16px">
+<div class="list-header" style="margin-bottom:20px">
+<div class="list-title">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+回を追加
+</div>
+</div>
+
+<!-- 日付 -->
+<div class="form-group">
+<label class="form-label">日付</label>
+<input type="date" class="form-input" id="adminDate" onchange="updateSessionPreview()">
+</div>
+
+<!-- 場所 -->
+<div class="form-group">
+<label class="form-label">場所</label>
+<div class="custom-select-wrap" id="adminLocationWrap">
+  <button type="button" class="custom-select-btn" id="adminLocationBtn" onclick="toggleAdminLocationDropdown()">
+    <span id="adminLocationLabel">選択してください</span>
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="custom-select-dropdown" id="adminLocationDropdown"></div>
+</div>
+<div id="newLocationWrap" style="display:none;margin-top:8px">
+  <input type="text" class="form-input" id="inputLocationNew" placeholder="場所名を入力...（例：福岡）" style="margin-bottom:6px" oninput="updateSessionPreview()">
+  <div style="display:flex;gap:8px">
+    <button type="button" class="btn btn-submit" style="flex:1;padding:9px" onclick="saveNewLocation()">追加して選択</button>
+    <button type="button" class="btn btn-cancel" style="flex:1;padding:9px" onclick="cancelNewLocation()">キャンセル</button>
+  </div>
+</div>
+</div>
+
+<!-- 回名（自由記述） -->
+<div class="form-group">
+<label class="form-label">回名の末尾<span style="font-size:11px;color:var(--t3);margin-left:6px">（BA / ADV / 体験会 など）</span></label>
+<input type="text" class="form-input" id="adminSessionSuffix" placeholder="BA" oninput="updateSessionPreview()">
+</div>
+
+<!-- プレビュー -->
+<div id="sessionPreviewWrap" style="display:none;padding:12px 14px;background:rgba(26,79,160,0.06);border:1px solid rgba(26,79,160,0.18);border-radius:var(--r-btn);margin-bottom:16px">
+<div style="font-size:12px;color:var(--t2);margin-bottom:4px;font-weight:500">生成される回名</div>
+<div id="sessionPreview" style="font-size:16px;font-weight:700;color:var(--a);letter-spacing:-0.01em"></div>
+<div style="font-size:11px;color:var(--t3);margin-top:4px">※ 登録後は入力モーダルで日付を選ぶと自動入力されます</div>
+</div>
+
+<button class="setup-btn primary" onclick="addSession()" style="width:100%">登録する</button>
+<div id="adminStatus" class="setup-status"></div>
+</div>
+
+<!-- 登録済み回一覧 -->
 <div class="list-section">
-<div class="list-header">
-<div class="list-title"><svg viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> Hot!Voice - よく出てる声</div>
+<div class="list-header" style="margin-bottom:16px">
+<div class="list-title">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+登録済みの回
 </div>
-<div id="dupList"></div>
 </div>
+<div id="sessionList"><div class="empty">まだ回が登録されていません</div></div>
+</div>
+
 </div>
 
 </div>
@@ -557,7 +847,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <button class="nav-btn active" onclick="switchTab('Dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ホーム</button>
 <button class="nav-add" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 <button class="nav-btn" onclick="switchTab('List')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>一覧</button>
-<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.09 12.97H11L10 22L20.09 11H13L13 2Z"/></svg>Hot! Voice</button>
+<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.09 12.97H11L10 22L20.09 11H13L13 2Z"/></svg>Hot!Voice</button>
 </nav>
 </div>
 
@@ -567,10 +857,25 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="modal-handle"></div>
 <div class="modal-header"><div class="modal-title">新規フィードバック</div><button class="modal-close" onclick="closeModal()">×</button></div>
 <div class="form-row">
-<div class="form-group"><label class="form-label">日付</label><input type="date" class="form-input" id="inputDate"></div>
+<div class="form-group"><label class="form-label">日付</label><input type="date" class="form-input" id="inputDate" onchange="onDateChange(this.value)"></div>
 <div class="form-group"><label class="form-label">回</label><input type="text" class="form-input" id="inputSession" placeholder="第○回" list="sessionHistory" autocomplete="off"><datalist id="sessionHistory"></datalist></div>
 </div>
-<div class="form-group"><label class="form-label">スタッフ名</label><input type="text" class="form-input" id="inputStaff" placeholder="名前"></div>
+<div class="form-group"><label class="form-label">スタッフ名</label>
+<div class="custom-select-wrap" id="staffSelectWrap">
+  <button type="button" class="custom-select-btn" id="staffSelectBtn" onclick="toggleStaffDropdown()">
+    <span id="staffSelectLabel">選択してください</span>
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="custom-select-dropdown" id="staffDropdown"></div>
+</div>
+<div id="newStaffWrap" style="display:none;margin-top:8px">
+  <input type="text" class="form-input" id="inputStaffNew" placeholder="名前を入力...（例：田中）" style="margin-bottom:6px">
+  <div style="display:flex;gap:8px">
+    <button type="button" class="btn btn-submit" style="flex:1;padding:9px" onclick="saveNewStaff()">追加して選択</button>
+    <button type="button" class="btn btn-cancel" style="flex:1;padding:9px" onclick="cancelNewStaff()">キャンセル</button>
+  </div>
+</div>
+</div>
 <div class="form-group"><label class="form-label">内容</label>
 <div class="voice-wrap"><textarea class="form-input" id="inputContent" placeholder="フィードバック内容..."></textarea><button type="button" class="voice-btn" id="voiceBtn" onclick="toggleVoice()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div>
 <div class="voice-status" id="voiceStatus"></div>
@@ -665,14 +970,34 @@ function useLocalMode() {
   document.getElementById('connStatus').textContent = 'LOCAL';
   document.getElementById('setupSection').classList.add('hidden');
   document.getElementById('mainContent').classList.remove('hidden');
-  
-  // Sample data for local mode
+
   data = [
-    {id:1,date:'2024-01-15',session:'第1回',category:'良かった点',staff:'田中',content:'参加者の反応が良い'},
-    {id:2,date:'2024-01-15',session:'第1回',category:'改善点',staff:'佐藤',content:'資料の文字が小さい'}
+    {id:1,date:'2026-04-15',session:'260415_ビジョン_BA',category:'良かった点',staff:'田中',content:'参加者の反応が良い'},
+    {id:2,date:'2026-04-15',session:'260415_ビジョン_BA',category:'改善点',staff:'佐藤',content:'資料の文字が小さい'}
   ];
+
+  // ダミーsessionsデータ（初回のみセット）
+  var existingSessions = JSON.parse(localStorage.getItem('wanvoice_sessions') || '[]');
+  if (!existingSessions.length) {
+    var today = new Date();
+    var fmt = function(d) {
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    };
+    var shortFmt = function(d) {
+      return String(d.getFullYear()).slice(2) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    };
+    var d1 = new Date(today); d1.setDate(today.getDate() - 7);
+    var d2 = new Date(today);
+    var d3 = new Date(today); d3.setDate(today.getDate() + 7);
+    saveLocalSessions([
+      { id: 1, date: fmt(d1), name: shortFmt(d1) + '_ビジョン_BA' },
+      { id: 2, date: fmt(d2), name: shortFmt(d2) + '_佐賀_ADV' },
+      { id: 3, date: fmt(d3), name: shortFmt(d3) + '_大名_BA' }
+    ]);
+  }
+
   renderAll();
-  addMsg('📱 ローカルモードで起動しました。データはブラウザ内にのみ保存されます。','bot');
+  addMsg('こんにちは！Wan!アシスタントです🐕<br>ローカルモードで起動しました。','bot');
 }
 
 async function loadData() {
@@ -690,6 +1015,7 @@ async function loadData() {
     
     data = await res.json();
     renderAll();
+    addMsg('こんにちは！Wan!アシスタントです🐕<br>Supabaseと連携中！データはクラウドに保存されます。','bot');
     addMsg('🔄 Supabaseから ' + data.length + '件のデータを読み込みました！','bot');
   } catch (err) {
     console.error('Load error:', err);
@@ -769,11 +1095,12 @@ function autoReconnect() {
 async function addEntry() {
   var d = document.getElementById('inputDate').value;
   var s = document.getElementById('inputSession').value;
-  var st = document.getElementById('inputStaff').value;
+  var st = _selectedStaff;
   var co = document.getElementById('inputContent').value;
-  
+
   if (!d || !s || !st || !co) {
-    alert('全て入力してください');
+    if (!st) alert('スタッフ名を選択または追加してください');
+    else alert('全て入力してください');
     return;
   }
   
@@ -822,6 +1149,12 @@ async function addEntry() {
   renderAll();
   // 前回値を保存(スタッフ名・回)
   localStorage.setItem('wanvoice_last_staff', st);
+  // staff_listにも追加（未登録の場合）
+  var staffList = JSON.parse(localStorage.getItem('wanvoice_staff_list') || '[]');
+  if (staffList.indexOf(st) === -1) {
+    staffList.push(st);
+    localStorage.setItem('wanvoice_staff_list', JSON.stringify(staffList));
+  }
   localStorage.setItem('wanvoice_last_session', s);
   // 回の履歴を更新(重複排除、最新20件)
   var history = JSON.parse(localStorage.getItem('wanvoice_session_history') || '[]');
@@ -991,12 +1324,22 @@ var icons = {
 function renderStats() {
   var dashData = getDashData();
   var st = getStats(dashData), dups = findDups();
+  function statCard(cls, icon, label, val) {
+    return '<div class="stat ' + cls + '">' +
+      '<div class="stat-top"><span class="stat-icon">' + icon + '</span><span class="stat-label">' + label + '</span></div>' +
+      '<div class="stat-val">' + val + '</div>' +
+    '</div>';
+  }
   document.getElementById('statsGrid').innerHTML =
-    '<div class="stat"><div class="stat-icon">' + icons.layers + '</div><div class="stat-val">' + dashData.length + '</div><div class="stat-label">総件数</div></div>' +
-    '<div class="stat good"><div class="stat-icon">' + icons.thumbsUp + '</div><div class="stat-val">' + (st.cat['良かった点'] || 0) + '</div><div class="stat-label">良かった点</div></div>' +
-    '<div class="stat warn"><div class="stat-icon">' + icons.lightbulb + '</div><div class="stat-val">' + (st.cat['改善点'] || 0) + '</div><div class="stat-label">改善点</div></div>' +
-    '<div class="stat bad"><div class="stat-icon">' + icons.alertTriangle + '</div><div class="stat-val">' + (st.cat['トラブル'] || 0) + '</div><div class="stat-label">トラブル</div></div>' +
-    '<div class="stat hot"><div class="stat-icon">' + icons.flame + '</div><div class="stat-val">' + dups.length + '</div><div class="stat-label">Hot!Voice</div></div>';
+    '<div class="stat-row-top">' +
+      statCard('', icons.layers, '総件数', dashData.length) +
+      statCard('hot', icons.flame, 'Hot!Voice', dups.length) +
+    '</div>' +
+    '<div class="stat-row-bottom">' +
+      statCard('good', icons.thumbsUp, '良かった点', st.cat['良かった点'] || 0) +
+      statCard('warn', icons.lightbulb, '改善点', st.cat['改善点'] || 0) +
+      statCard('bad', icons.alertTriangle, 'トラブル', st.cat['トラブル'] || 0) +
+    '</div>';
 }
 
 // Dashboard filter state
@@ -1008,6 +1351,22 @@ function onDashFilterChange() {
   dashSessionFilter = document.getElementById('dashSessionFilter').value;
   renderStats();
   renderPieChart();
+  resizeDashFilter();
+}
+
+// selectの幅を選択中テキストに合わせる
+function resizeDashFilter() {
+  var sel = document.getElementById('dashSessionFilter');
+  if (!sel) return;
+  var text = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+  var span = document.createElement('span');
+  span.style.cssText = 'visibility:hidden;position:absolute;white-space:nowrap;font-size:14px;font-weight:500;font-family:inherit;padding:0';
+  span.textContent = text;
+  document.body.appendChild(span);
+  var w = span.offsetWidth + 28; // 28px = padding-right for arrow
+  document.body.removeChild(span);
+  var maxW = window.innerWidth - 80;
+  sel.style.width = Math.min(w, maxW) + 'px';
 }
 
 function renderPieChart() {
@@ -1033,22 +1392,58 @@ function updateFilters() {
     ss.forEach(function(s) { dsel.innerHTML += '<option value="' + s + '"' + (s === cur ? ' selected' : '') + '>' + s + '</option>'; });
     // 以前選択した回がデータから消えていたら 'all' に戻す
     if (cur !== 'all' && ss.indexOf(cur) === -1) { dashSessionFilter = 'all'; dsel.value = 'all'; }
+    resizeDashFilter();
   }
 }
 
+var LIST_PAGE_SIZE = 30;
+var _listShowCount = LIST_PAGE_SIZE;
+
 function renderList() {
+  _listShowCount = LIST_PAGE_SIZE; // フィルター変更時にリセット
+  _renderListItems();
+}
+
+function _renderListItems() {
   var q = document.getElementById('searchInput').value.toLowerCase(), fs = document.getElementById('filterSession').value, fc = document.getElementById('filterCategory').value, dupIds = getDupIds();
   var filtered = data.filter(function(d) { return (d.content.toLowerCase().indexOf(q) !== -1 || d.staff.toLowerCase().indexOf(q) !== -1) && (fs === 'all' || d.session === fs) && (fc === 'all' || d.category === fc); });
   if (!filtered.length) { document.getElementById('dataList').innerHTML = '<div class="empty">データがありません</div>'; return; }
-  var html = ''; filtered.forEach(function(d) { var isDup = dupIds.has(d.id); html += '<div class="data-item' + (isDup ? ' dup' : '') + '"><div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + esc(d.category) + '</span></div><button class="del-btn" onclick="deleteEntry(' + d.id + ')">削除</button></div><div class="item-content">' + esc(d.content) + '</div><div class="item-meta"><span>' + icons.calendar + esc(d.date) + '</span><span>' + icons.user + esc(d.staff) + '</span><span>' + icons.bookmark + esc(d.session) + '</span></div></div>'; });
+  var tagIcons = {
+    '良かった点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>',
+    '改善点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
+    'トラブル': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    'その他': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>'
+  };
+  var visible = filtered.slice(0, _listShowCount);
+  var remaining = filtered.length - _listShowCount;
+  var html = '';
+  visible.forEach(function(d) {
+    var isDup = dupIds.has(d.id);
+    var icon = tagIcons[d.category] || tagIcons['その他'];
+    html += '<div class="data-item' + (isDup ? ' dup' : '') + '">' +
+      '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div></div>' +
+      '<div class="item-content">' + esc(d.content) + '</div>' +
+      '<div class="item-meta"><span>' + icons.bookmark + esc(d.session) + '</span><span>' + icons.user + esc(d.staff) + '</span></div>' +
+    '</div>';
+  });
+  if (remaining > 0) {
+    html += '<button class="load-more-btn" onclick="loadMoreList()">さらに' + Math.min(remaining, LIST_PAGE_SIZE) + '件を表示（残り' + remaining + '件）</button>';
+  }
   document.getElementById('dataList').innerHTML = html;
 }
 
-function renderAll() { updateFilters(); renderStats(); renderPieChart(); renderList(); }
+function loadMoreList() {
+  _listShowCount += LIST_PAGE_SIZE;
+  _renderListItems();
+}
+
+function renderAll() { updateFilters(); renderStats(); renderPieChart(); renderList(); updateAiDataCount(); }
+function updateAiDataCount() { var el = document.getElementById('aiDataCount'); if (el) el.textContent = data.length; }
 
 // ===== AI CHAT =====
-function sendChat() { var input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return; addMsg(msg, 'user'); input.value = ''; showTyping(); setTimeout(function() { hideTyping(); addMsg(generateAI(msg), 'bot'); }, 800); }
+function sendChat() { var input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return; showChatArea(); addMsg(msg, 'user'); input.value = ''; showTyping(); setTimeout(function() { hideTyping(); addMsg(generateAI(msg), 'bot'); }, 800); }
 function askBot(q) { document.getElementById('chatInput').value = q; sendChat(); }
+function showChatArea() { var w = document.getElementById('aiWelcome'); var c = document.getElementById('chatArea'); if (w) w.style.display = 'none'; if (c) c.classList.add('active'); }
 function addMsg(txt, type) { var box = document.getElementById('chatBox'), div = document.createElement('div'); div.className = 'msg ' + type; div.innerHTML = txt; box.appendChild(div); box.scrollTop = box.scrollHeight; }
 function showTyping() { var box = document.getElementById('chatBox'), div = document.createElement('div'); div.className = 'msg bot typing-ind'; div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>'; box.appendChild(div); box.scrollTop = box.scrollHeight; }
 function hideTyping() { var t = document.querySelector('.typing-ind'); if (t) t.remove(); }
@@ -1227,13 +1622,125 @@ function openModal() {
   document.getElementById('modal').classList.add('show');
   document.body.classList.add('modal-open');
   document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
-  // 前回値を復元
-  var lastStaff = localStorage.getItem('wanvoice_last_staff') || '';
   var lastSession = localStorage.getItem('wanvoice_last_session') || '';
-  if (!document.getElementById('inputStaff').value) document.getElementById('inputStaff').value = lastStaff;
   if (!document.getElementById('inputSession').value) document.getElementById('inputSession').value = lastSession;
   rebuildSessionDatalist();
+  rebuildStaffSelect();
 }
+
+// スタッフ名カスタムドロップダウン
+var _selectedStaff = '';
+
+function rebuildStaffSelect() {
+  var staffList = JSON.parse(localStorage.getItem('wanvoice_staff_list') || '[]');
+  var lastStaff = localStorage.getItem('wanvoice_last_staff') || '';
+  // 既存ユーザーのlast_staffをstaff_listに自動移行
+  if (lastStaff && staffList.indexOf(lastStaff) === -1) {
+    staffList.push(lastStaff);
+    localStorage.setItem('wanvoice_staff_list', JSON.stringify(staffList));
+  }
+
+  if (staffList.length === 0) {
+    _selectedStaff = '';
+    document.getElementById('staffSelectLabel').textContent = '選択してください';
+    showNewStaffInput();
+    return;
+  }
+
+  // 前回値を選択状態にセット
+  if (lastStaff && staffList.indexOf(lastStaff) !== -1) {
+    _selectedStaff = lastStaff;
+  } else {
+    _selectedStaff = staffList[0];
+  }
+  document.getElementById('staffSelectLabel').textContent = _selectedStaff;
+
+  // ドロップダウンの選択肢を構築
+  var dropdown = document.getElementById('staffDropdown');
+  dropdown.innerHTML = '';
+  staffList.forEach(function(name) {
+    var opt = document.createElement('div');
+    opt.className = 'custom-select-option' + (name === _selectedStaff ? ' selected' : '');
+    opt.textContent = name;
+    opt.onclick = function() { selectStaff(name); };
+    dropdown.appendChild(opt);
+  });
+  var addOpt = document.createElement('div');
+  addOpt.className = 'custom-select-option add-new';
+  addOpt.textContent = '新しい名前を追加...';
+  addOpt.onclick = function() { closeStaffDropdown(); showNewStaffInput(); };
+  dropdown.appendChild(addOpt);
+
+  hideNewStaffInput();
+}
+
+function toggleStaffDropdown() {
+  var btn = document.getElementById('staffSelectBtn');
+  var dropdown = document.getElementById('staffDropdown');
+  var isOpen = dropdown.classList.contains('open');
+  if (isOpen) {
+    closeStaffDropdown();
+  } else {
+    btn.classList.add('open');
+    dropdown.classList.add('open');
+  }
+}
+
+function closeStaffDropdown() {
+  document.getElementById('staffSelectBtn').classList.remove('open');
+  document.getElementById('staffDropdown').classList.remove('open');
+}
+
+function selectStaff(name) {
+  _selectedStaff = name;
+  document.getElementById('staffSelectLabel').textContent = name;
+  // selected クラスを更新
+  document.querySelectorAll('#staffDropdown .custom-select-option').forEach(function(el) {
+    el.classList.toggle('selected', el.textContent === name);
+  });
+  closeStaffDropdown();
+  hideNewStaffInput();
+}
+
+function onStaffSelectChange() {} // 後方互換のため残す
+
+function showNewStaffInput() {
+  var wrap = document.getElementById('newStaffWrap');
+  wrap.style.display = 'block';
+  document.getElementById('inputStaffNew').value = '';
+  setTimeout(function(){ document.getElementById('inputStaffNew').focus(); }, 50);
+}
+
+function hideNewStaffInput() {
+  document.getElementById('newStaffWrap').style.display = 'none';
+  document.getElementById('inputStaffNew').value = '';
+}
+
+function saveNewStaff() {
+  var newName = document.getElementById('inputStaffNew').value.trim();
+  if (!newName) { alert('名前を入力してください'); return; }
+  var staffList = JSON.parse(localStorage.getItem('wanvoice_staff_list') || '[]');
+  if (staffList.indexOf(newName) === -1) {
+    staffList.push(newName);
+    localStorage.setItem('wanvoice_staff_list', JSON.stringify(staffList));
+  }
+  localStorage.setItem('wanvoice_last_staff', newName);
+  rebuildStaffSelect();
+  selectStaff(newName);
+}
+
+function cancelNewStaff() {
+  var staffList = JSON.parse(localStorage.getItem('wanvoice_staff_list') || '[]');
+  if (staffList.length > 0) {
+    hideNewStaffInput();
+  }
+}
+
+// ドロップダウン外クリックで閉じる
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('staffSelectWrap');
+  if (wrap && !wrap.contains(e.target)) closeStaffDropdown();
+});
 function closeModal() { stopVoice(); document.getElementById('modal').classList.remove('show'); document.body.classList.remove('modal-open'); }
 
 // 回のdatalistを履歴から再構築
@@ -1252,31 +1759,332 @@ function resetSettings() {
   location.reload();
 }
 
+// ===== OVERFLOW MENU =====
+function toggleOverflowMenu() {
+  var menu = document.getElementById('overflowMenu');
+  menu.classList.toggle('show');
+}
+function closeOverflowMenu() {
+  document.getElementById('overflowMenu').classList.remove('show');
+}
+// メニュー外クリックで閉じる
+document.addEventListener('click', function(e) {
+  var wrap = document.querySelector('.overflow-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) closeOverflowMenu();
+});
+
 // ===== NAVIGATION =====
 function switchTab(tab) {
-  // Hide all tabs
   document.getElementById('tabDash').classList.add('hidden');
-  document.getElementById('tabList').classList.add('hidden');
+  var tlEl = document.getElementById('tabList'); tlEl.classList.add('hidden'); tlEl.style.display = '';
   document.getElementById('tabDup').classList.add('hidden');
-  
-  // Remove active from all nav buttons
+  document.getElementById('tabAdmin').classList.add('hidden');
   document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
-  
-  // Show selected tab and activate button
+
   if (tab === 'Dash') {
     document.getElementById('tabDash').classList.remove('hidden');
     document.querySelectorAll('.nav-btn')[0].classList.add('active');
   } else if (tab === 'List') {
-    document.getElementById('tabList').classList.remove('hidden');
+    var tl = document.getElementById('tabList');
+    tl.classList.remove('hidden');
+    tl.style.display = 'flex';
+    // PC時は自然なスクロール、モバイル時はflex固定高さ
+    if (window.innerWidth >= 900) {
+      tl.style.height = 'auto';
+      tl.style.minHeight = 'calc(100dvh - 57px)';
+    } else {
+      tl.style.height = 'calc(100dvh - 57px)';
+    }
     document.querySelectorAll('.nav-btn')[1].classList.add('active');
     renderList();
   } else if (tab === 'Dup') {
     document.getElementById('tabDup').classList.remove('hidden');
     document.querySelectorAll('.nav-btn')[2].classList.add('active');
     renderDuplicates();
+  } else if (tab === 'Admin') {
+    document.getElementById('tabAdmin').classList.remove('hidden');
+    rebuildAdminLocationDropdown();
+    renderSessionList();
   }
-  
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== ADMIN TAB =====
+var DEFAULT_LOCATIONS = ['ビジョン', '佐賀', '大名', 'テクノ'];
+var _selectedAdminLocation = '';
+
+function getLocationList() {
+  var stored = JSON.parse(localStorage.getItem('wanvoice_location_list') || 'null');
+  if (!stored) {
+    // 初回：デフォルトをセット
+    localStorage.setItem('wanvoice_location_list', JSON.stringify(DEFAULT_LOCATIONS));
+    return DEFAULT_LOCATIONS.slice();
+  }
+  return stored;
+}
+
+function rebuildAdminLocationDropdown() {
+  var list = getLocationList();
+  var dropdown = document.getElementById('adminLocationDropdown');
+  var lastLoc = localStorage.getItem('wanvoice_last_location') || '';
+  if (!_selectedAdminLocation) {
+    _selectedAdminLocation = (lastLoc && list.indexOf(lastLoc) !== -1) ? lastLoc : (list[0] || '');
+  }
+  document.getElementById('adminLocationLabel').textContent = _selectedAdminLocation || '選択してください';
+
+  dropdown.innerHTML = '';
+  list.forEach(function(loc) {
+    var opt = document.createElement('div');
+    opt.className = 'custom-select-option' + (loc === _selectedAdminLocation ? ' selected' : '');
+    opt.textContent = loc;
+    opt.onclick = function() { selectAdminLocation(loc); };
+    dropdown.appendChild(opt);
+  });
+  var addOpt = document.createElement('div');
+  addOpt.className = 'custom-select-option add-new';
+  addOpt.textContent = '新しい場所を追加...';
+  addOpt.onclick = function() { closeAdminLocationDropdown(); showNewLocationInput(); };
+  dropdown.appendChild(addOpt);
+  updateSessionPreview();
+}
+
+function toggleAdminLocationDropdown() {
+  var btn = document.getElementById('adminLocationBtn');
+  var dropdown = document.getElementById('adminLocationDropdown');
+  if (dropdown.classList.contains('open')) {
+    closeAdminLocationDropdown();
+  } else {
+    btn.classList.add('open');
+    dropdown.classList.add('open');
+  }
+}
+
+function closeAdminLocationDropdown() {
+  document.getElementById('adminLocationBtn').classList.remove('open');
+  document.getElementById('adminLocationDropdown').classList.remove('open');
+}
+
+function selectAdminLocation(loc) {
+  _selectedAdminLocation = loc;
+  document.getElementById('adminLocationLabel').textContent = loc;
+  document.querySelectorAll('#adminLocationDropdown .custom-select-option').forEach(function(el) {
+    el.classList.toggle('selected', el.textContent === loc);
+  });
+  closeAdminLocationDropdown();
+  hideNewLocationInput();
+  updateSessionPreview();
+}
+
+function showNewLocationInput() {
+  document.getElementById('newLocationWrap').style.display = 'block';
+  document.getElementById('inputLocationNew').value = '';
+  setTimeout(function(){ document.getElementById('inputLocationNew').focus(); }, 50);
+}
+
+function hideNewLocationInput() {
+  document.getElementById('newLocationWrap').style.display = 'none';
+  document.getElementById('inputLocationNew').value = '';
+}
+
+function saveNewLocation() {
+  var name = document.getElementById('inputLocationNew').value.trim();
+  if (!name) { alert('場所名を入力してください'); return; }
+  var list = getLocationList();
+  if (list.indexOf(name) === -1) {
+    list.push(name);
+    localStorage.setItem('wanvoice_location_list', JSON.stringify(list));
+  }
+  localStorage.setItem('wanvoice_last_location', name);
+  _selectedAdminLocation = name;
+  rebuildAdminLocationDropdown();
+  selectAdminLocation(name);
+}
+
+function cancelNewLocation() {
+  hideNewLocationInput();
+}
+
+// ドロップダウン外クリックで閉じる（場所）
+document.addEventListener('click', function(e) {
+  var wrap = document.getElementById('adminLocationWrap');
+  if (wrap && !wrap.contains(e.target)) closeAdminLocationDropdown();
+});
+
+// 回名プレビューを更新
+function updateSessionPreview() {
+  var date = document.getElementById('adminDate').value;
+  var loc = _selectedAdminLocation || document.getElementById('inputLocationNew').value.trim();
+  var suffix = document.getElementById('adminSessionSuffix').value.trim();
+  var wrap = document.getElementById('sessionPreviewWrap');
+  var preview = document.getElementById('sessionPreview');
+
+  if (!date || !loc) { wrap.style.display = 'none'; return; }
+
+  // 日付を YYMMDD 形式に変換
+  var d = new Date(date);
+  var yy = String(d.getFullYear()).slice(2);
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  var name = yy + mm + dd + '_' + loc + (suffix ? '_' + suffix : '');
+  preview.textContent = name;
+  wrap.style.display = 'block';
+  return name;
+}
+
+// 回を登録
+async function addSession() {
+  var date = document.getElementById('adminDate').value;
+  var loc = _selectedAdminLocation;
+  var suffix = document.getElementById('adminSessionSuffix').value.trim();
+  var status = document.getElementById('adminStatus');
+
+  if (!date) { alert('日付を選択してください'); return; }
+  if (!loc) { alert('場所を選択または追加してください'); return; }
+
+  var d = new Date(date);
+  var yy = String(d.getFullYear()).slice(2);
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  var name = yy + mm + dd + '_' + loc + (suffix ? '_' + suffix : '');
+
+  status.className = 'setup-status';
+  status.style.display = 'block';
+  status.style.background = 'rgba(255,255,255,0.1)';
+  status.style.color = 'var(--t2)';
+  status.textContent = '登録中...';
+
+  if (isConnected) {
+    try {
+      var res = await fetch(supabaseUrl + '/rest/v1/sessions', {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': 'Bearer ' + supabaseKey,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({ date: date, name: name })
+      });
+      if (!res.ok) {
+        var err = await res.json();
+        throw new Error(err.message || '登録エラー');
+      }
+      status.className = 'setup-status success';
+      status.textContent = '✅ 登録しました：' + name;
+      localStorage.setItem('wanvoice_last_location', loc);
+      document.getElementById('adminDate').value = '';
+      document.getElementById('adminSessionSuffix').value = '';
+      document.getElementById('sessionPreviewWrap').style.display = 'none';
+      renderSessionList();
+    } catch (err) {
+      status.className = 'setup-status error';
+      status.textContent = '❌ 登録失敗：' + err.message;
+    }
+  } else {
+    // ローカルモード：localStorageに保存
+    var localSessions = getLocalSessions();
+    var exists = localSessions.find(function(s){ return s.date === date; });
+    if (exists) {
+      if (!confirm('同じ日付の回「' + exists.name + '」が既にあります。上書きしますか？')) {
+        status.style.display = 'none';
+        return;
+      }
+      localSessions = localSessions.filter(function(s){ return s.date !== date; });
+    }
+    localSessions.push({ id: Date.now(), date: date, name: name });
+    saveLocalSessions(localSessions);
+    status.className = 'setup-status success';
+    status.textContent = '✅ 登録しました：' + name;
+    localStorage.setItem('wanvoice_last_location', loc);
+    document.getElementById('adminDate').value = '';
+    document.getElementById('adminSessionSuffix').value = '';
+    document.getElementById('sessionPreviewWrap').style.display = 'none';
+    renderSessionList();
+  }
+}
+
+// ローカルセッションのhelper
+function getLocalSessions() {
+  return JSON.parse(localStorage.getItem('wanvoice_sessions') || '[]');
+}
+function saveLocalSessions(sessions) {
+  localStorage.setItem('wanvoice_sessions', JSON.stringify(sessions));
+}
+
+// 登録済み回一覧を表示
+async function renderSessionList() {
+  var container = document.getElementById('sessionList');
+  var sessions = [];
+  if (isConnected) {
+    try {
+      var res = await fetch(supabaseUrl + '/rest/v1/sessions?order=date.desc', {
+        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+      });
+      if (!res.ok) throw new Error();
+      sessions = await res.json();
+    } catch (e) {
+      container.innerHTML = '<div class="empty">読み込みエラー</div>';
+      return;
+    }
+  } else {
+    sessions = getLocalSessions().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  }
+  if (!sessions.length) {
+    container.innerHTML = '<div class="empty">まだ回が登録されていません</div>';
+    return;
+  }
+  container.innerHTML = sessions.map(function(s) {
+    return '<div class="session-item">' +
+      '<div>' +
+        '<div style="font-size:15px;font-weight:600;color:var(--t1)">' + esc(s.name) + '</div>' +
+        '<div style="font-size:12px;color:var(--t3);margin-top:3px">' + esc(s.date) + '</div>' +
+      '</div>' +
+      '<button class="del-btn" onclick="deleteSession(' + s.id + ', \'' + esc(s.name) + '\')">削除</button>' +
+    '</div>';
+  }).join('');
+}
+
+// 回を削除
+async function deleteSession(id, name) {
+  if (!confirm('「' + name + '」を削除しますか？')) return;
+  if (isConnected) {
+    try {
+      var res = await fetch(supabaseUrl + '/rest/v1/sessions?id=eq.' + id, {
+        method: 'DELETE',
+        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+      });
+      if (!res.ok) throw new Error();
+    } catch (e) {
+      alert('削除に失敗しました'); return;
+    }
+  } else {
+    var localSessions = getLocalSessions().filter(function(s){ return s.id !== id; });
+    saveLocalSessions(localSessions);
+  }
+  renderSessionList();
+}
+
+// ===== 日付選択で回を自動入力 =====
+async function onDateChange(val) {
+  if (!val) return;
+  var sessionInput = document.getElementById('inputSession');
+  if (isConnected) {
+    try {
+      var res = await fetch(supabaseUrl + '/rest/v1/sessions?date=eq.' + val + '&limit=1', {
+        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+      });
+      if (!res.ok) return;
+      var rows = await res.json();
+      sessionInput.value = rows.length ? rows[0].name : '';
+      sessionInput.placeholder = rows.length ? '第○回' : '該当なし（手入力）';
+    } catch (e) {}
+  } else {
+    // ローカルモード
+    var localSessions = getLocalSessions();
+    var match = localSessions.find(function(s){ return s.date === val; });
+    sessionInput.value = match ? match.name : '';
+    sessionInput.placeholder = match ? '第○回' : '該当なし（手入力）';
+  }
 }
 
 // ===== HOT!VOICE (類似グループ) =====
@@ -1289,35 +2097,90 @@ function renderDuplicates() {
     return;
   }
   
-  // 件数が多い順にソート
   dups.sort(function(a, b){ return b.sim.length - a.sim.length; });
+  
+  // カテゴリ別アイコン
+  var tagIcons = {
+    '良かった点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>',
+    '改善点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
+    'トラブル': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    'その他': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>'
+  };
   
   var html = '';
   dups.forEach(function(g, i) {
     var count = g.sim.length + 1;
+    var detailId = 'dupDetail' + i;
+    // 最大類似度を計算
+    var maxSim = 0;
+    g.sim.forEach(function(s) { if (s.sim > maxSim) maxSim = s.sim; });
+    var simPct = Math.round(maxSim * 100);
+    
+    var origIcon = tagIcons[g.orig.category] || tagIcons['その他'];
+    
     html += '<div class="dup-group">';
-    html += '<div class="dup-header">' + icons.flame + 'Hot #' + (i + 1) + ' · ' + count + '件の似た声</div>';
+    // ヘッダー行
+    html += '<div class="dup-header">';
+    html += '<span class="dup-header-left">' + icons.flame + ' Hot #' + (i + 1) + ' · ' + count + '件の似た声</span>';
+    html += '<span class="dup-sim-badge">' + simPct + '% 類似</span>';
+    html += '</div>';
+    
+    // コンテンツエリア
+    html += '<div class="dup-content-area">';
+    // カテゴリタグ
+    html += '<div class="item-tags"><span class="tag ' + catColors[g.orig.category] + '">' + origIcon + esc(g.orig.category) + '</span></div>';
+    // 要約（最初のカード全文）
+    html += '<div class="dup-summary">' + esc(g.orig.content) + '</div>';
+    html += '</div>';
+    
+    // 折りたたみトグルと詳細をグレー背景で囲む
+    html += '<div class="dup-expandable" id="' + detailId + 'Wrap">';
+    html += '<button class="dup-toggle" onclick="toggleDupDetail(\'' + detailId + '\', this)">';
+    html += '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+    html += count + '件の詳細を見る</button>';
+    
+    // 折りたたみ詳細
+    html += '<div class="dup-details collapsed" id="' + detailId + '">';
     
     // Original
     html += '<div class="data-item">';
-    html += '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[g.orig.category] + '">' + esc(g.orig.category) + '</span></div></div>';
     html += '<div class="item-content">' + esc(g.orig.content) + '</div>';
-    html += '<div class="item-meta"><span>' + icons.user + esc(g.orig.staff) + '</span><span>' + icons.bookmark + esc(g.orig.session) + '</span></div>';
+    html += '<div class="item-meta"><span>' + icons.bookmark + esc(g.orig.session) + '</span><span>' + icons.user + esc(g.orig.staff) + '</span></div>';
     html += '</div>';
     
     // Similar items
     g.sim.forEach(function(s) {
-      html += '<div class="data-item dup">';
-      html += '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[s.item.category] + '">' + esc(s.item.category) + '</span><span class="tag warn">' + Math.round(s.sim * 100) + '% 類似</span></div></div>';
+      html += '<div class="data-item">';
       html += '<div class="item-content">' + esc(s.item.content) + '</div>';
-      html += '<div class="item-meta"><span>' + icons.user + esc(s.item.staff) + '</span><span>' + icons.bookmark + esc(s.item.session) + '</span></div>';
+      html += '<div class="item-meta"><span>' + icons.bookmark + esc(s.item.session) + '</span><span>' + icons.user + esc(s.item.staff) + '</span></div>';
       html += '</div>';
     });
     
-    html += '</div>';
+    html += '</div>'; // dup-details
+    html += '</div>'; // dup-expandable
+    html += '</div>'; // dup-group
   });
   
   container.innerHTML = html;
+}
+
+function toggleDupDetail(id, btn) {
+  var el = document.getElementById(id);
+  var wrap = document.getElementById(id + 'Wrap');
+  var isOpen = el.classList.contains('expanded');
+  if (isOpen) {
+    el.classList.remove('expanded');
+    el.classList.add('collapsed');
+    btn.classList.remove('open');
+    wrap.classList.remove('open');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>' + el.querySelectorAll('.data-item').length + '件の詳細を見る';
+  } else {
+    el.classList.remove('collapsed');
+    el.classList.add('expanded');
+    btn.classList.add('open');
+    wrap.classList.add('open');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>閉じる';
+  }
 }
 
 // ===== CSV =====
