@@ -306,7 +306,7 @@ label.hbtn{position:relative}
 
 .chat-input-wrap{display:flex;align-items:center;gap:0;margin-top:auto;border:1px solid var(--b);border-radius:10px;padding:4px 4px 4px 14px;background:#fff;transition:border-color 0.2s}
 .chat-input-wrap:focus-within{border-color:var(--a)}
-.chat-input{flex:1;padding:8px 0;background:transparent;border:none;color:var(--t1);font-size:16px;font-family:inherit;outline:none}
+.chat-input{flex:1;min-width:0;padding:8px 0;background:transparent;border:none;color:var(--t1);font-size:16px;font-family:inherit;outline:none}
 .chat-input::placeholder{color:#c0c0c0}
 .chat-send{width:32px;height:32px;background:#1A4FA0;border:none;border-radius:8px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
 .chat-send:hover{background:#163F80}
@@ -599,6 +599,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .form-row{gap:12px}
   /* iOS Safari 自動ズーム防止（font-size<16pxでタップ時にズームが発生するため） */
   .form-input, input[type="date"] { font-size: 16px; max-width: 100%; min-width: 0; box-sizing: border-box; }
+  input[type="date"].form-input { appearance: none; overflow: hidden; padding-left: 14px; padding-right: 14px; }
   .modal-content{max-height:92vh;padding:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
   /* Stats */
   .stat{padding:18px 14px}
@@ -2242,6 +2243,7 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 initVoice();
 autoReconnect();
 rebuildSessionDatalist();
+document.getElementById('adminDate').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
 </html>
