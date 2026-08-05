@@ -188,8 +188,6 @@ label.hbtn{position:relative}
 }
 @media(max-width:600px){
   .dash-section{margin-left:-16px;margin-right:-16px;border-radius:0;padding:16px 16px 24px}
-  .ai-section{border-radius:0;border-left:none;border-right:none;padding:24px 16px}
-  .ai-welcome-desc br{display:none}
   .stats-inline .stat-val{font-size:32px}
 }
 .stat{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:22px 18px;text-align:left;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card),var(--highlight-top);cursor:default}
@@ -217,13 +215,8 @@ label.hbtn{position:relative}
 .card-title{font-size:15px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:10px;letter-spacing:-0.01em}
 .card-title svg{width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .list-title svg{width:18px;height:18px;stroke:var(--t3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.qbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.qbtn{display:inline-flex;align-items:center;gap:7px}
 .item-meta svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.7}
 .item-meta span{display:inline-flex;align-items:center;gap:5px}
-.dup-header svg{width:14px;height:14px;stroke:var(--hot);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.dup-header-left svg{width:14px;height:14px;stroke:var(--hot);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-
 .bar-wrap{position:relative;padding-left:32px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 .bar-wrap::-webkit-scrollbar{height:4px}
 .bar-wrap::-webkit-scrollbar-thumb{background:rgba(17,17,17,0.15);border-radius:2px}
@@ -261,57 +254,11 @@ label.hbtn{position:relative}
 .pie-dot{width:10px;height:10px;border-radius:2px}
 .pie-pct{margin-left:auto;color:var(--t2);font-weight:600;font-variant-numeric:tabular-nums}
 
-/* ===== ダッシュボード2カラムレイアウト ===== */
+/* ===== ダッシュボードレイアウト ===== */
 .dash-layout{display:flex;flex-direction:column;gap:20px}
 @media(min-width:900px){
-  .dash-layout{flex-direction:row;align-items:stretch}
-  .dash-section{flex:1;min-width:0;margin-bottom:0;background:#ffffff;border-radius:var(--r-card)}
-  .ai-section{width:340px;flex-shrink:0}
+  .dash-section{margin-bottom:0;background:#ffffff;border-radius:var(--r-card)}
 }
-
-/* AI Chat */
-.ai-section{background:#fff;border-radius:var(--r-card);padding:28px;display:flex;flex-direction:column}
-.ai-header{display:flex;align-items:center;gap:12px;margin-bottom:0;padding-bottom:20px}
-.ai-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#6366F1,#8B5CF6);flex-shrink:0;box-shadow:0 1px 2px rgba(99,102,241,0.14),0 8px 24px rgba(99,102,241,0.28)}
-.ai-avatar svg{width:100%;height:100%}
-.ai-info h3{font-size:16px;font-weight:700;color:var(--t1);letter-spacing:-0.02em}
-.ai-info p{font-size:13px;color:var(--t3);margin-top:1px}
-
-/* 初回ウェルカム画面 */
-.ai-welcome{text-align:center;padding:24px 8px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ai-welcome-title{font-size:18px;font-weight:700;color:var(--t1);line-height:1.5;margin-bottom:12px}
-.ai-welcome-desc{font-size:13px;color:var(--t3);line-height:1.7;margin-bottom:20px}
-.ai-welcome .quick-btns{justify-content:center}
-
-/* チャットエリア */
-.chat-area{flex:1;display:none;flex-direction:column}
-.chat-area.active{display:flex}
-.chat-box{max-height:280px;overflow-y:auto;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;flex:1}
-.msg{max-width:85%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;animation:msgIn 0.3s ease}
-@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.msg.bot{background:#f4f6fa;color:var(--t1);align-self:flex-start;border-bottom-left-radius:4px}
-.msg.user{background:#1A4FA0;color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
-
-/* クイックボタン */
-.quick-btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:0}
-.qbtn{padding:8px 14px;background:#fff;border:1px solid var(--b);border-radius:999px;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:-0.005em}
-.qbtn:hover{border-color:var(--bl);color:var(--t1)}
-.qbtn:active{background:var(--card-2)}
-.qbtn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2}
-.typing{display:flex;gap:5px;padding:12px 16px}
-.typing span{width:7px;height:7px;background:var(--t3);border-radius:50%;animation:bounce 1.4s infinite}
-.typing span:nth-child(2){animation-delay:0.2s}
-.typing span:nth-child(3){animation-delay:0.4s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
-
-.chat-input-wrap{display:flex;align-items:center;gap:0;margin-top:auto;border:1px solid var(--b);border-radius:10px;padding:4px 4px 4px 14px;background:#fff;transition:border-color 0.2s}
-.chat-input-wrap:focus-within{border-color:var(--a)}
-.chat-input{flex:1;min-width:0;padding:8px 0;background:transparent;border:none;color:var(--t1);font-size:16px;font-family:inherit;outline:none}
-.chat-input::placeholder{color:#c0c0c0}
-.chat-send{width:32px;height:32px;background:#1A4FA0;border:none;border-radius:8px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
-.chat-send:hover{background:#163F80}
-.chat-send:active{transform:scale(0.95)}
-.chat-send svg{width:14px;height:14px}
 
 /* Data List */
 /* ===== 一覧タブ ===== */
@@ -339,8 +286,7 @@ label.hbtn{position:relative}
   .list-sticky-inner .list-filters-wrap{display:contents}
 }
 #tabList{margin:-32px -24px 0;width:calc(100% + 48px)}
-#tabDup{margin:-32px -24px 0;width:calc(100% + 48px)}
-@media(max-width:600px){#tabList{margin:-20px -16px 0;width:calc(100% + 32px)}#tabDup{margin:-20px -16px 0;width:calc(100% + 32px)}}
+@media(max-width:600px){#tabList{margin:-20px -16px 0;width:calc(100% + 32px)}}
 .list-title{font-size:20px;font-weight:500;color:var(--t1);display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .list-title svg{width:32px;height:32px;stroke:var(--t1);fill:none;stroke-width:2;flex-shrink:0}
 
@@ -395,12 +341,13 @@ label.hbtn{position:relative}
 .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 
 /* 管理タブ：セッション一覧アイテム */
+#sessionList{display:flex;flex-direction:column;gap:8px}
 .session-item{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:14px 16px;box-shadow:var(--shadow-card),var(--highlight-top);display:flex;justify-content:space-between;align-items:center;box-sizing:border-box}
 
-/* 削除ボタン（Hot!Voice用に残す） */
-.del-btn{background:#fff;border:1px solid var(--b);color:var(--t3);padding:6px 12px;border-radius:var(--r-tag);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow-card)}
-.del-btn:hover{background:rgba(220,38,38,0.06);border-color:rgba(220,38,38,0.2);color:#DC2626;transform:translateY(-1px)}
-.del-btn:active{transform:translateY(0)}
+/* 削除アイコン（声一覧・セッション一覧共通） */
+.item-del-btn{background:none;border:none;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#9daabd;cursor:pointer;transition:color 0.2s cubic-bezier(0.4,0,0.2,1)}
+.item-del-btn:hover{color:#DC2626}
+.item-del-btn svg{width:24px;height:24px}
 
 /* ===== Bottom Nav ===== */
 /* 共通：ピル型フローティングバー */
@@ -526,33 +473,13 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 .btn-submit:hover{background:#163F80;transform:translateY(-1px);box-shadow:var(--shadow-brand-hover),var(--highlight-dark)}
 .btn-submit:active{transform:translateY(0);box-shadow:var(--shadow-brand),var(--highlight-dark)}
 
+/* Toast */
+.toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,12px);background:#1A1A1A;color:#fff;padding:14px 24px;border-radius:8px;font-size:15px;font-weight:600;letter-spacing:-0.01em;box-shadow:0 12px 32px rgba(0,0,0,0.3);z-index:400;opacity:0;pointer-events:none;transition:opacity 0.25s cubic-bezier(0.4,0,0.2,1),transform 0.25s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;width:90%;box-sizing:border-box}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:600px){.toast{bottom:107px;font-size:14px;padding:12px 20px}}
+
 .loading{text-align:center;padding:48px 20px;color:var(--t3);font-size:14px;font-weight:500}
 .loading::after{content:'';display:inline-block;width:16px;height:16px;border:2px solid var(--b);border-top-color:var(--t1);border-radius:50%;animation:spin 0.8s linear infinite;margin-left:10px;vertical-align:middle}
-/* Hot!Voice カード */
-.dup-group{background:#fff;border:none;border-radius:8px;padding:24px 20px;margin-bottom:0;box-shadow:0 4px 16px 0 rgba(157,170,189,0.2)}
-.dup-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid #f0f1f3;margin-bottom:0;gap:8px}
-.dup-header-left{font-size:14px;font-weight:700;color:#fa7c25}
-.dup-sim-badge{display:inline-flex;align-items:center;justify-content:center;background:#fff2e8;color:#f97315;font-size:14px;font-weight:700;padding:4px 12px;border-radius:40px;white-space:nowrap;flex-shrink:0}
-.dup-content-area{display:flex;flex-direction:column;gap:16px;padding-top:24px}
-.dup-summary{font-size:15px;line-height:1.6;color:#000;word-break:break-word}
-.dup-toggle{display:flex;align-items:center;gap:4px;width:100%;background:#f5f5f5;border:none;border-radius:6px;padding:16px;font-size:14px;font-weight:500;color:var(--t2);cursor:pointer;font-family:inherit;transition:all 0.2s}
-.dup-toggle:hover{background:#efefef}
-.dup-toggle svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;transition:transform 0.2s;flex-shrink:0}
-.dup-toggle.open svg{transform:rotate(180deg)}
-.dup-details{display:none;flex-direction:column;gap:16px}
-.dup-details.collapsed{display:none}
-.dup-details.expanded{display:flex;padding:0 16px}
-
-/* 展開時のグレー背景ラッパー */
-.dup-expandable{margin-top:16px}
-.dup-expandable.open{background:#f5f5f5;border-radius:6px;padding:0 0 16px 0}
-.dup-expandable.open .dup-toggle{background:transparent;border:none;border-radius:0;padding:16px}
-.dup-details .data-item{background:#fff;border:none;border-radius:8px;padding:24px 20px;box-shadow:none;display:flex;flex-direction:column;gap:14px}
-
-/* Hot!Voiceタブ背景 */
-.dup-tab-title{padding:24px 40px}
-.dup-tab-title h2{font-size:24px;font-weight:500;color:var(--t1);padding:4px 8px}
-.dup-tab-body{background:#f4f6fa;padding:24px 40px;display:flex;flex-direction:column;gap:24px;min-height:200px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .hbtn svg{transition:transform 0.3s}
 #refreshBtn.spinning{color:var(--t1)}
@@ -566,10 +493,10 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .mn{padding:20px 16px;padding-bottom:calc(120px + var(--sb))}
   .list-sticky{padding:20px 16px}
   .list-body{padding:20px 16px}
-  .card,.list-section,.ai-section,.setup-section{padding:22px}
+  .card,.list-section,.setup-section{padding:22px}
   .setup-section{padding:24px}
   /* Typography */
-  .stat-label,.bar-label,.legend-item,.ai-info p,.ai-status,.voice-status,.item-meta,.del-btn,.conn-badge,.brs,.pie-item{font-size:0.75rem!important}
+  .stat-label,.bar-label,.legend-item,.ai-status,.voice-status,.item-meta,.conn-badge,.brs,.pie-item{font-size:0.75rem!important}
   .bar-y,.pie-label{font-size:11px!important}
   .tag{font-size:12px!important}
   .stat-val{font-size:28px}
@@ -579,8 +506,6 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .item-content{font-size:15px}
   /* Tap targets */
   .modal-close{width:36px;height:36px;font-size:20px}
-  .del-btn{padding:7px 12px;min-height:34px}
-  .qbtn{padding:9px 14px;min-height:38px}
   .btn{padding:14px;min-height:48px;font-size:15px}
   .hbtn{width:40px;height:40px}
   /* Bar chart */
@@ -606,8 +531,6 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   .stat-val{font-size:26px}
   /* Pie */
   .pie-wrap.pie-main{gap:24px;padding:16px 0}
-  .dup-tab-title{padding: 20px 16px;}
-  .dup-tab-body{padding: 20px 16px;}
 }
 </style>
 </head>
@@ -691,7 +614,6 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div id="tabDash">
 <div class="dash-layout">
 
-<!-- 左：ダッシュボードセクション -->
 <div class="dash-section">
   <div class="dash-filter-wrap">
     <select class="dash-filter-select" id="dashSessionFilter" onchange="onDashFilterChange()"><option value="all">全ての回</option></select>
@@ -703,39 +625,11 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   </div>
 </div>
 
-<!-- 右：Wan!アシスタント -->
-<div class="ai-section">
-  <div class="ai-header">
-    <div class="ai-avatar"><svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#6366F1"/><stop offset="100%" style="stop-color:#8B5CF6"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#pg)"/><path d="M35 40v20l15 12V28L35 40z" fill="#fff"/><rect x="28" y="40" width="10" height="20" rx="2" fill="#fff"/><path d="M58 35c4 4 6 9 6 15s-2 11-6 15" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M66 28c6 6 9 14 9 22s-3 16-9 22" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/></svg></div>
-    <div class="ai-info"><h3>Wan!アシスタント</h3><p>フィードバック分析をAIがサポート</p></div>
-  </div>
-
-  <!-- ウェルカム画面（初回表示） -->
-  <div class="ai-welcome" id="aiWelcome">
-    <div class="ai-welcome-title">こんにちは！<br>Wan!アシスタントです🐕</div>
-    <div class="ai-welcome-desc">蓄積されたユーザーボイスをAIが分析し、<br>改善のヒントを抽出します。<br>現在、<strong id="aiDataCount">0</strong>件のフィードバックが分析可能です。</div>
-    <div class="quick-btns">
-      <button class="qbtn" onclick="askBot('要約して')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>要約</button>
-      <button class="qbtn" onclick="askBot('問題点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>問題点</button>
-      <button class="qbtn" onclick="askBot('良かった点は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>良い点</button>
-      <button class="qbtn" onclick="askBot('hotな声は？')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Hot!Voice</button>
-      <button class="qbtn" onclick="askBot('傾向を教えて')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>傾向</button>
-    </div>
-  </div>
-
-  <!-- チャットエリア（メッセージ送信後に表示） -->
-  <div class="chat-area" id="chatArea">
-    <div class="chat-box" id="chatBox"></div>
-  </div>
-
-  <div class="chat-input-wrap">
-    <input type="text" class="chat-input" id="chatInput" placeholder="質問を入力" onkeypress="if(event.key==='Enter')sendChat()">
-    <button class="chat-send" onclick="sendChat()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-  </div>
-</div>
-
 </div>
 </div>
+
+<!-- 保存/同期などの通知ログ（非表示・addMsg()用） -->
+<div id="chatBox" style="display:none"></div>
 
 <!-- Tab: Data List -->
 <div id="tabList" class="hidden" style="flex-direction:column">
@@ -759,12 +653,6 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="list-body">
   <div class="data-list" id="dataList"></div>
 </div>
-</div>
-
-<!-- Tab: Duplicates -->
-<div id="tabDup" class="hidden">
-<div class="dup-tab-title"><h2>Hot! Voice -  よく出てる声</h2></div>
-<div class="dup-tab-body" id="dupList"></div>
 </div>
 
 <!-- Tab: Admin -->
@@ -850,7 +738,6 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <button class="nav-btn active" onclick="switchTab('Dash')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>ホーム</button>
 <button class="nav-add" onclick="openModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 <button class="nav-btn" onclick="switchTab('List')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>一覧</button>
-<button class="nav-btn" onclick="switchTab('Dup')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4.09 12.97H11L10 22L20.09 11H13L13 2Z"/></svg>Hot!Voice</button>
 </nav>
 </div>
 
@@ -886,6 +773,9 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="form-btns"><button class="btn btn-cancel" onclick="closeModal()">キャンセル</button><button class="btn btn-submit" onclick="addEntry()">追加</button></div>
 </div>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
 // ===== SUPABASE CONFIG =====
@@ -1000,7 +890,7 @@ function useLocalMode() {
   }
 
   renderAll();
-  addMsg('こんにちは！Wan!アシスタントです🐕<br>ローカルモードで起動しました。','bot');
+  addMsg('ローカルモードで起動しました。','bot');
 }
 
 async function loadData() {
@@ -1018,7 +908,7 @@ async function loadData() {
     
     data = await res.json();
     renderAll();
-    addMsg('こんにちは！Wan!アシスタントです🐕<br>Supabaseと連携中！データはクラウドに保存されます。','bot');
+    addMsg('Supabaseと連携中！データはクラウドに保存されます。','bot');
     addMsg('🔄 Supabaseから ' + data.length + '件のデータを読み込みました！','bot');
   } catch (err) {
     console.error('Load error:', err);
@@ -1137,6 +1027,7 @@ async function addEntry() {
       savedEntry = inserted[0];
       data.unshift(savedEntry);
       addMsg('✅ 保存しました。AIがカテゴリを判定中...','bot');
+      showToast('✅ 追加されました');
     } catch (err) {
       alert('保存エラー: ' + err.message);
       return;
@@ -1146,6 +1037,7 @@ async function addEntry() {
     savedEntry = newEntry;
     data.unshift(savedEntry);
     addMsg('✅ ローカルに保存しました。AIがカテゴリを判定中...','bot');
+    showToast('✅ 追加されました');
   }
   
   closeModal();
@@ -1424,7 +1316,8 @@ function _renderListItems() {
     var isDup = dupIds.has(d.id);
     var icon = tagIcons[d.category] || tagIcons['その他'];
     html += '<div class="data-item' + (isDup ? ' dup' : '') + '">' +
-      '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div></div>' +
+      '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div>' +
+      '<button class="item-del-btn" onclick="deleteEntry(' + d.id + ')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button></div>' +
       '<div class="item-content">' + esc(d.content) + '</div>' +
       '<div class="item-meta"><span>' + icons.bookmark + esc(d.session) + '</span><span>' + icons.user + esc(d.staff) + '</span></div>' +
     '</div>';
@@ -1440,184 +1333,18 @@ function loadMoreList() {
   _renderListItems();
 }
 
-function renderAll() { updateFilters(); renderStats(); renderPieChart(); renderList(); updateAiDataCount(); }
-function updateAiDataCount() { var el = document.getElementById('aiDataCount'); if (el) el.textContent = data.length; }
+function renderAll() { updateFilters(); renderStats(); renderPieChart(); renderList(); }
 
-// ===== AI CHAT =====
-function sendChat() { var input = document.getElementById('chatInput'), msg = input.value.trim(); if (!msg) return; showChatArea(); addMsg(msg, 'user'); input.value = ''; showTyping(); setTimeout(function() { hideTyping(); addMsg(generateAI(msg), 'bot'); }, 800); }
-function askBot(q) { document.getElementById('chatInput').value = q; sendChat(); }
-function showChatArea() { var w = document.getElementById('aiWelcome'); var c = document.getElementById('chatArea'); if (w) w.style.display = 'none'; if (c) c.classList.add('active'); }
+// ===== NOTIFICATIONS =====
 function addMsg(txt, type) { var box = document.getElementById('chatBox'), div = document.createElement('div'); div.className = 'msg ' + type; div.innerHTML = txt; box.appendChild(div); box.scrollTop = box.scrollHeight; }
-function showTyping() { var box = document.getElementById('chatBox'), div = document.createElement('div'); div.className = 'msg bot typing-ind'; div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>'; box.appendChild(div); box.scrollTop = box.scrollHeight; }
-function hideTyping() { var t = document.querySelector('.typing-ind'); if (t) t.remove(); }
 
-function generateAI(q) {
-  var ql = q.toLowerCase().replace(/[？?！!。、\s]/g, '');
-  var st = getStats(), ss = getSessions();
-  
-  // キーワードマッチング（柔軟に）
-  var patterns = {
-    summary: ['要約','まとめ','概要','全体','サマリ','総括','ぜんぶ','すべて','全部','どんな感じ','状況','レポート'],
-    problem: ['問題','トラブル','課題','困','悪い','ダメ','だめ','改善','直す','なおす','修正','バグ','エラー','クレーム','苦情','不満','心配','懸念','ネガティブ','negative'],
-    good: ['良','いい','よい','よかった','ポジティブ','positive','good','グッド','好評','評判','成功','うまく','嬉しい','感謝','ありがと','褒め'],
-    priority: ['hot','ホット','よく出','多い','頻出','繰り返','重複','似た','類似'],
-    trend: ['傾向','推移','分析','変化','比較','トレンド','グラフ','チャート','経過','流れ'],
-    staff: ['誰','だれ','スタッフ','担当','人','メンバー','名前'],
-    count: ['何件','なんけん','いくつ','数','カウント','件数'],
-    recent: ['最近','最新','新しい','今日','昨日','さっき'],
-    search: ['検索','探','さがす','見つけ','ある？','ありますか','について']
-  };
-  
-  // パターンマッチ
-  function match(keys) {
-    return keys.some(function(k) { return ql.includes(k); });
-  }
-  
-  // 要約
-  if (match(patterns.summary) || ql.length < 3) {
-    return '📊 <b>フィードバック要約</b><br><br>' +
-      '全<b>' + data.length + '件</b>（' + ss.length + '回分）<br><br>' +
-      '👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>' +
-      '✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>' +
-      '⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>' +
-      (isConnected ? '<br><br>☁️ Supabaseに保存中' : '');
-  }
-  
-  // 問題・改善点
-  if (match(patterns.problem)) {
-    var probs = data.filter(function(d) { return d.category === 'トラブル' || d.category === '改善点'; });
-    if (!probs.length) return '✅ 問題点や改善点の報告はありません！素晴らしいですね👏';
-    var r = '⚠️ <b>問題点・改善点（' + probs.length + '件）</b><br><br>';
-    probs.slice(0, 5).forEach(function(p) {
-      r += '• ' + esc(p.content) + '<br><small style="color:var(--t3)">' + p.session + ' / ' + p.staff + '</small><br><br>';
-    });
-    if (probs.length > 5) r += '<small>他 ' + (probs.length - 5) + '件...</small>';
-    return r;
-  }
-  
-  // 良かった点
-  if (match(patterns.good)) {
-    var goods = data.filter(function(d) { return d.category === '良かった点'; });
-    if (!goods.length) return '良かった点の報告はまだありません。これから増えるといいですね！';
-    var r = '👍 <b>良かった点（' + goods.length + '件）</b><br><br>';
-    goods.slice(0, 5).forEach(function(g) {
-      r += '• ' + esc(g.content) + '<br><small style="color:var(--t3)">' + g.session + ' / ' + g.staff + '</small><br><br>';
-    });
-    if (goods.length > 5) r += '<small>他 ' + (goods.length - 5) + '件...</small>';
-    return r;
-  }
-  
-  // Hot!Voice(よく出る声)
-  if (match(patterns.priority)) {
-    var dups = findDups();
-    if (!dups.length) return '✅ 似た声の繰り返しはまだありません';
-    dups.sort(function(a, b){ return b.sim.length - a.sim.length; });
-    var r = '🔥 <b>Hot!Voice - よく出ている声</b><br><br>';
-    dups.slice(0, 5).forEach(function(g, i) {
-      var count = g.sim.length + 1;
-      r += (i + 1) + '. ' + esc(g.orig.content) + '<br><small style="color:var(--t3)">' + count + '件の類似 / ' + g.orig.category + '</small><br><br>';
-    });
-    return r;
-  }
-  
-  // 傾向分析
-  if (match(patterns.trend)) {
-    if (!ss.length) return '📈 まだデータがないので傾向分析できません';
-    var r = '📈 <b>傾向分析</b><br><br>';
-    ss.forEach(function(s) {
-      var d = st.sess[s] || {}, g = d['良かった点'] || 0, b = (d['改善点'] || 0) + (d['トラブル'] || 0);
-      var emoji = g > b ? '😊' : g < b ? '😟' : '😐';
-      r += emoji + ' <b>' + s + '</b>: 👍' + g + ' / 📝' + b + '<br>';
-    });
-    var totalGood = st.cat['良かった点'] || 0;
-    var totalBad = (st.cat['改善点'] || 0) + (st.cat['トラブル'] || 0);
-    r += '<br><b>全体:</b> ' + (totalGood > totalBad ? 'ポジティブ傾向 📈' : totalGood < totalBad ? '改善の余地あり 📉' : 'バランス型 ➡️');
-    return r;
-  }
-  
-  // スタッフ別
-  if (match(patterns.staff)) {
-    var staffCounts = {};
-    data.forEach(function(d) { staffCounts[d.staff] = (staffCounts[d.staff] || 0) + 1; });
-    var staffList = Object.keys(staffCounts).sort(function(a, b) { return staffCounts[b] - staffCounts[a]; });
-    if (!staffList.length) return '👤 スタッフデータがありません';
-    var r = '👤 <b>スタッフ別投稿数</b><br><br>';
-    staffList.forEach(function(s) { r += '• ' + esc(s) + ': ' + staffCounts[s] + '件<br>'; });
-    return r;
-  }
-  
-  // 件数
-  if (match(patterns.count)) {
-    return '📊 現在 <b>' + data.length + '件</b> のフィードバックがあります<br><br>' +
-      '👍 良かった点: ' + (st.cat['良かった点'] || 0) + '件<br>' +
-      '✏️ 改善点: ' + (st.cat['改善点'] || 0) + '件<br>' +
-      '⚠️ トラブル: ' + (st.cat['トラブル'] || 0) + '件<br>' +
-      '💜 その他: ' + (st.cat['その他'] || 0) + '件';
-  }
-  
-  // 最近
-  if (match(patterns.recent)) {
-    if (!data.length) return '📭 まだデータがありません';
-    var recent = data.slice(0, 3);
-    var r = '🕐 <b>最近のフィードバック</b><br><br>';
-    recent.forEach(function(d) {
-      r += '• [' + d.category + '] ' + esc(d.content) + '<br><small style="color:var(--t3)">' + d.date + ' / ' + d.staff + '</small><br><br>';
-    });
-    return r;
-  }
-  
-  // 特定の回
-  var sessionMatch = ql.match(/(\d+)/);
-  if (sessionMatch && (ql.includes('回') || ql.includes('第'))) {
-    var ts = '第' + sessionMatch[1] + '回';
-    var sd = data.filter(function(d) { return d.session === ts; });
-    if (!sd.length) return '📋 ' + ts + 'のデータはまだありません';
-    var r = '📋 <b>' + ts + '（' + sd.length + '件）</b><br><br>';
-    sd.forEach(function(d) { r += '• [' + d.category + '] ' + esc(d.content) + '<br>'; });
-    return r;
-  }
-  
-  // キーワード検索（フォールバック）
-  if (match(patterns.search) || ql.length >= 2) {
-    var keyword = ql.replace(/検索|探して|さがして|ある|ありますか|について|教えて|おしえて/g, '').trim();
-    if (keyword.length >= 2) {
-      var found = data.filter(function(d) {
-        return d.content.toLowerCase().includes(keyword) || 
-               d.staff.toLowerCase().includes(keyword) ||
-               d.session.includes(keyword);
-      });
-      if (found.length) {
-        var r = '🔍 <b>「' + keyword + '」の検索結果（' + found.length + '件）</b><br><br>';
-        found.slice(0, 5).forEach(function(f) {
-          r += '• ' + esc(f.content) + '<br><small style="color:var(--t3)">' + f.category + ' / ' + f.session + ' / ' + f.staff + '</small><br><br>';
-        });
-        return r;
-      }
-    }
-  }
-  
-  // どれにもマッチしない場合、データから関連を探す
-  var anyMatch = data.filter(function(d) {
-    return d.content.toLowerCase().includes(ql.substring(0, 3));
-  });
-  if (anyMatch.length) {
-    var r = '🔍 「' + q + '」に関連しそうなデータ：<br><br>';
-    anyMatch.slice(0, 3).forEach(function(m) {
-      r += '• ' + esc(m.content) + '<br>';
-    });
-    return r;
-  }
-  
-  // 最終フォールバック
-  return '🤖 「' + esc(q) + '」ですね！<br><br>' +
-    '現在のデータ: ' + data.length + '件<br><br>' +
-    '質問例：<br>' +
-    '• 「まとめて」「状況は？」<br>' +
-    '• 「問題ある？」「困ってること」<br>' +
-    '• 「良かったこと」「うまくいったの」<br>' +
-    '• 「急ぎのやつ」「優先高いの」<br>' +
-    '• 「第1回どうだった？」<br>' +
-    '• 「〇〇で検索」';
+var _toastTimer = null;
+function showToast(txt) {
+  var t = document.getElementById('toast');
+  t.textContent = txt;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2400);
 }
 
 // ===== MODAL =====
@@ -1780,7 +1507,6 @@ document.addEventListener('click', function(e) {
 function switchTab(tab) {
   document.getElementById('tabDash').classList.add('hidden');
   var tlEl = document.getElementById('tabList'); tlEl.classList.add('hidden'); tlEl.style.display = '';
-  document.getElementById('tabDup').classList.add('hidden');
   document.getElementById('tabAdmin').classList.add('hidden');
   document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
 
@@ -1800,10 +1526,6 @@ function switchTab(tab) {
     }
     document.querySelectorAll('.nav-btn')[1].classList.add('active');
     renderList();
-  } else if (tab === 'Dup') {
-    document.getElementById('tabDup').classList.remove('hidden');
-    document.querySelectorAll('.nav-btn')[2].classList.add('active');
-    renderDuplicates();
   } else if (tab === 'Admin') {
     document.getElementById('tabAdmin').classList.remove('hidden');
     rebuildAdminLocationDropdown();
@@ -2042,7 +1764,7 @@ async function renderSessionList() {
         '<div style="font-size:15px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(s.name) + '</div>' +
         '<div style="font-size:12px;color:var(--t3);margin-top:3px">' + esc(s.date) + '</div>' +
       '</div>' +
-      '<button class="del-btn" onclick="deleteSession(' + s.id + ', \'' + esc(s.name) + '\')">削除</button>' +
+      '<button class="item-del-btn" onclick="deleteSession(' + s.id + ', \'' + esc(s.name) + '\')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button>' +
     '</div>';
   }).join('');
 }
@@ -2087,102 +1809,6 @@ async function onDateChange(val) {
     var match = localSessions.find(function(s){ return s.date === val; });
     sessionInput.value = match ? match.name : '';
     sessionInput.placeholder = match ? '第○回' : '該当なし（手入力）';
-  }
-}
-
-// ===== HOT!VOICE (類似グループ) =====
-function renderDuplicates() {
-  var dups = findDups();
-  var container = document.getElementById('dupList');
-  
-  if (!dups.length) {
-    container.innerHTML = '<div class="empty">似た声のグループはまだありません</div>';
-    return;
-  }
-  
-  dups.sort(function(a, b){ return b.sim.length - a.sim.length; });
-  
-  // カテゴリ別アイコン
-  var tagIcons = {
-    '良かった点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>',
-    '改善点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
-    'トラブル': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
-    'その他': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>'
-  };
-  
-  var html = '';
-  dups.forEach(function(g, i) {
-    var count = g.sim.length + 1;
-    var detailId = 'dupDetail' + i;
-    // 最大類似度を計算
-    var maxSim = 0;
-    g.sim.forEach(function(s) { if (s.sim > maxSim) maxSim = s.sim; });
-    var simPct = Math.round(maxSim * 100);
-    
-    var origIcon = tagIcons[g.orig.category] || tagIcons['その他'];
-    
-    html += '<div class="dup-group">';
-    // ヘッダー行
-    html += '<div class="dup-header">';
-    html += '<span class="dup-header-left">' + icons.flame + ' Hot #' + (i + 1) + ' · ' + count + '件の似た声</span>';
-    html += '<span class="dup-sim-badge">' + simPct + '% 類似</span>';
-    html += '</div>';
-    
-    // コンテンツエリア
-    html += '<div class="dup-content-area">';
-    // カテゴリタグ
-    html += '<div class="item-tags"><span class="tag ' + catColors[g.orig.category] + '">' + origIcon + esc(g.orig.category) + '</span></div>';
-    // 要約（最初のカード全文）
-    html += '<div class="dup-summary">' + esc(g.orig.content) + '</div>';
-    html += '</div>';
-    
-    // 折りたたみトグルと詳細をグレー背景で囲む
-    html += '<div class="dup-expandable" id="' + detailId + 'Wrap">';
-    html += '<button class="dup-toggle" onclick="toggleDupDetail(\'' + detailId + '\', this)">';
-    html += '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
-    html += count + '件の詳細を見る</button>';
-    
-    // 折りたたみ詳細
-    html += '<div class="dup-details collapsed" id="' + detailId + '">';
-    
-    // Original
-    html += '<div class="data-item">';
-    html += '<div class="item-content">' + esc(g.orig.content) + '</div>';
-    html += '<div class="item-meta"><span>' + icons.bookmark + esc(g.orig.session) + '</span><span>' + icons.user + esc(g.orig.staff) + '</span></div>';
-    html += '</div>';
-    
-    // Similar items
-    g.sim.forEach(function(s) {
-      html += '<div class="data-item">';
-      html += '<div class="item-content">' + esc(s.item.content) + '</div>';
-      html += '<div class="item-meta"><span>' + icons.bookmark + esc(s.item.session) + '</span><span>' + icons.user + esc(s.item.staff) + '</span></div>';
-      html += '</div>';
-    });
-    
-    html += '</div>'; // dup-details
-    html += '</div>'; // dup-expandable
-    html += '</div>'; // dup-group
-  });
-  
-  container.innerHTML = html;
-}
-
-function toggleDupDetail(id, btn) {
-  var el = document.getElementById(id);
-  var wrap = document.getElementById(id + 'Wrap');
-  var isOpen = el.classList.contains('expanded');
-  if (isOpen) {
-    el.classList.remove('expanded');
-    el.classList.add('collapsed');
-    btn.classList.remove('open');
-    wrap.classList.remove('open');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>' + el.querySelectorAll('.data-item').length + '件の詳細を見る';
-  } else {
-    el.classList.remove('collapsed');
-    el.classList.add('expanded');
-    btn.classList.add('open');
-    wrap.classList.add('open');
-    btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>閉じる';
   }
 }
 
