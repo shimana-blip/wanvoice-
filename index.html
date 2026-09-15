@@ -84,6 +84,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%}
 
 /* LIVE バッジ：ブランド名の隣にインライン */
 .conn-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.08em;white-space:nowrap;flex-shrink:0;padding:0}
+.topic-chip{background:rgba(26,79,160,.08);color:var(--a);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
 .conn-badge::before{content:'';width:7px;height:7px;min-width:7px;min-height:7px;border-radius:50%;background:var(--t4);flex-shrink:0}
 .conn-badge.on{color:#059669}
 .conn-badge.on::before{background:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,0.2)}
@@ -766,6 +767,9 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   </div>
 </div>
 </div>
+<div class="form-group"><label class="form-label">何について <span style="color:var(--t3);font-weight:400">（任意・短く）</span></label>
+<input type="text" class="form-input" id="inputTopic" placeholder="例：動画制作のワーク / プロンプトの説明" list="topicHistory" autocomplete="off">
+<datalist id="topicHistory"></datalist></div>
 <div class="form-group"><label class="form-label">内容</label>
 <div class="voice-wrap"><textarea class="form-input" id="inputContent" placeholder="フィードバック内容..."></textarea><button type="button" class="voice-btn" id="voiceBtn" onclick="toggleVoice()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button></div>
 <div class="voice-status" id="voiceStatus"></div>
@@ -990,6 +994,7 @@ async function addEntry() {
   var s = document.getElementById('inputSession').value;
   var st = _selectedStaff;
   var co = document.getElementById('inputContent').value;
+  var tp = document.getElementById('inputTopic').value.trim();
 
   if (!d || !s || !st || !co) {
     if (!st) alert('スタッフ名を選択または追加してください');
@@ -1003,7 +1008,8 @@ async function addEntry() {
     session: s,
     category: '判定中...',
     staff: st,
-    content: co
+    content: co,
+    topic: tp || null
   };
   
   var savedEntry = null;
@@ -1058,7 +1064,16 @@ async function addEntry() {
   if (history.length > 20) history = history.slice(0, 20);
   localStorage.setItem('wanvoice_session_history', JSON.stringify(history));
   rebuildSessionDatalist();
-  // 内容のみクリア(スタッフ名・回は保持)
+  // 「何について」の履歴を更新（重複排除、最新30件）
+  if (tp) {
+    var topics = JSON.parse(localStorage.getItem('wanvoice_topic_history') || '[]');
+    topics = topics.filter(function(x){ return x !== tp; });
+    topics.unshift(tp);
+    if (topics.length > 30) topics = topics.slice(0, 30);
+    localStorage.setItem('wanvoice_topic_history', JSON.stringify(topics));
+    rebuildTopicDatalist();
+  }
+  // 内容のみクリア(スタッフ名・回・何については保持)
   document.getElementById('inputContent').value = '';
   
   // バックグラウンドでカテゴリ判定
@@ -1301,7 +1316,7 @@ function renderList() {
 
 function _renderListItems() {
   var q = document.getElementById('searchInput').value.toLowerCase(), fs = document.getElementById('filterSession').value, fc = document.getElementById('filterCategory').value, dupIds = getDupIds();
-  var filtered = data.filter(function(d) { return (d.content.toLowerCase().indexOf(q) !== -1 || d.staff.toLowerCase().indexOf(q) !== -1) && (fs === 'all' || d.session === fs) && (fc === 'all' || d.category === fc); });
+  var filtered = data.filter(function(d) { return (d.content.toLowerCase().indexOf(q) !== -1 || d.staff.toLowerCase().indexOf(q) !== -1 || (d.topic || '').toLowerCase().indexOf(q) !== -1) && (fs === 'all' || d.session === fs) && (fc === 'all' || d.category === fc); });
   if (!filtered.length) { document.getElementById('dataList').innerHTML = '<div class="empty">データがありません</div>'; return; }
   var tagIcons = {
     '良かった点': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H7a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L15 2h0a3.13 3.13 0 0 1 3 3.88Z"/></svg>',
@@ -1319,7 +1334,7 @@ function _renderListItems() {
       '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div>' +
       '<button class="item-del-btn" onclick="deleteEntry(' + d.id + ')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button></div>' +
       '<div class="item-content">' + esc(d.content) + '</div>' +
-      '<div class="item-meta"><span>' + icons.bookmark + esc(d.session) + '</span><span>' + icons.user + esc(d.staff) + '</span></div>' +
+      '<div class="item-meta"><span>' + icons.bookmark + esc(d.session) + '</span><span>' + icons.user + esc(d.staff) + '</span>' + (d.topic ? '<span class="topic-chip">' + esc(d.topic) + '</span>' : '') + '</div>' +
     '</div>';
   });
   if (remaining > 0) {
@@ -1355,6 +1370,7 @@ function openModal() {
   var lastSession = localStorage.getItem('wanvoice_last_session') || '';
   if (!document.getElementById('inputSession').value) document.getElementById('inputSession').value = lastSession;
   rebuildSessionDatalist();
+  rebuildTopicDatalist();
   rebuildStaffSelect();
 }
 
@@ -1479,6 +1495,23 @@ function rebuildSessionDatalist() {
   if (!dl) return;
   var history = JSON.parse(localStorage.getItem('wanvoice_session_history') || '[]');
   dl.innerHTML = history.map(function(s){ return '<option value="' + s.replace(/"/g,'&quot;') + '">'; }).join('');
+}
+
+// 「何について」の候補。自分が過去に打った言葉を先に、その下にコマの定番語を出す。
+// 選択は強制しない。空欄でも保存できる。
+var TOPIC_SUGGEST = [
+  '参加目的の統一','コミュニケーションパズル','ChatAI基礎','プロンプト',
+  '企画立案','エージェント','LP制作','コンテンツ制作','LPブラッシュアップ',
+  'セキュリティ','チームスリー','オリジナルAI','AI導入','課題解決',
+  '会場設営','受付','機材','ネット回線','グループ分け','進行全体'
+];
+function rebuildTopicDatalist() {
+  var dl = document.getElementById('topicHistory');
+  if (!dl) return;
+  var history = JSON.parse(localStorage.getItem('wanvoice_topic_history') || '[]');
+  var list = history.slice();
+  TOPIC_SUGGEST.forEach(function(t){ if (list.indexOf(t) === -1) list.push(t); });
+  dl.innerHTML = list.map(function(s){ return '<option value="' + s.replace(/"/g,'&quot;') + '">'; }).join('');
 }
 
 // 接続設定リセット
@@ -1869,6 +1902,7 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 initVoice();
 autoReconnect();
 rebuildSessionDatalist();
+rebuildTopicDatalist();
 document.getElementById('adminDate').value = new Date().toISOString().split('T')[0];
 </script>
 </body>
