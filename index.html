@@ -600,6 +600,16 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <input type="text" class="setup-input" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIs...">
 </div>
 </div>
+<div class="setup-row">
+<div>
+<label class="setup-label">ログイン用メールアドレス</label>
+<input type="email" class="setup-input" id="loginEmail" placeholder="team@example.com" autocomplete="username">
+</div>
+<div>
+<label class="setup-label">パスワード</label>
+<input type="password" class="setup-input" id="loginPassword" placeholder="共有パスワード" autocomplete="current-password">
+</div>
+</div>
 <div class="setup-btns">
 <button class="setup-btn primary" onclick="connectSupabase()">🔌 接続</button>
 <button class="setup-btn secondary" onclick="useLocalMode()">📱 ローカルモードで使う</button>
@@ -785,21 +795,81 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 // ===== SUPABASE CONFIG =====
 var supabaseUrl = '';
 var supabaseKey = '';
+var supabaseAccessToken = '';   // ログイン後に発行される、実際に送るトークン
 var isConnected = false;
+var isAuthed = false;
 var data = [];
 
 var catColors = {良かった点:'good',改善点:'warn',トラブル:'bad',その他:'other','判定中...':'pending'};
 var catHex = {良かった点:'#10B981',改善点:'#F59E0B',トラブル:'#DC2626',その他:'#8B5CF6'};
 
+// ===== ログイン（共有アカウント） =====
+var authExpiresAt = 0; // epoch ms
+
+async function loginSupabase(url, key, email, pass) {
+  var res = await fetch(url + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: pass })
+  });
+  if (!res.ok) {
+    var err = await res.json().catch(function(){ return {}; });
+    throw new Error(err.error_description || err.msg || 'ログインに失敗しました');
+  }
+  var tok = await res.json();
+  supabaseAccessToken = tok.access_token;
+  authExpiresAt = Date.now() + (tok.expires_in || 3600) * 1000;
+  localStorage.setItem('wanvoice_refresh_token', tok.refresh_token);
+  isAuthed = true;
+}
+
+// アクセストークンの期限が近ければ、保存済みの refresh_token で更新する。
+// ログインしたまま開催中ずっと開きっぱなしにしても、書き込みが急に止まらないようにするため。
+async function ensureFreshToken() {
+  if (!isAuthed) return;
+  if (Date.now() < authExpiresAt - 60000) return;
+  var refreshToken = localStorage.getItem('wanvoice_refresh_token');
+  if (!refreshToken) { isAuthed = false; return; }
+  try {
+    var res = await fetch(supabaseUrl + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { 'apikey': supabaseKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    if (!res.ok) throw new Error();
+    var tok = await res.json();
+    supabaseAccessToken = tok.access_token;
+    authExpiresAt = Date.now() + (tok.expires_in || 3600) * 1000;
+    localStorage.setItem('wanvoice_refresh_token', tok.refresh_token);
+  } catch (e) {
+    isAuthed = false;
+  }
+}
+
+// Supabase REST 呼び出し用の共通ヘッダー。呼ぶたびにトークンの鮮度を確認する。
+async function supaHeaders(extra) {
+  await ensureFreshToken();
+  var h = { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + (supabaseAccessToken || supabaseKey) };
+  if (extra) for (var k in extra) h[k] = extra[k];
+  return h;
+}
+
 // ===== SUPABASE CONNECTION =====
 async function connectSupabase() {
   var url = document.getElementById('supabaseUrl').value.trim();
   var key = document.getElementById('supabaseKey').value.trim();
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPassword').value;
   var status = document.getElementById('setupStatus');
   
   if (!url || !key) {
     status.className = 'setup-status error';
     status.textContent = '❌ URLとAPIキーを入力してください';
+    return;
+  }
+  if (!email || !pass) {
+    status.className = 'setup-status error';
+    status.textContent = '❌ ログイン用のメールアドレスとパスワードを入力してください';
     return;
   }
   
@@ -808,17 +878,18 @@ async function connectSupabase() {
     status.style.display = 'block';
     status.style.background = 'rgba(255,255,255,0.1)';
     status.style.color = 'var(--t2)';
-    status.textContent = '接続中...';
+    status.textContent = 'ログイン中...';
     
     supabaseUrl = url;
     supabaseKey = key;
+
+    await loginSupabase(url, key, email, pass);
+
+    status.textContent = '接続中...';
     
     // Use fetch directly for Supabase REST API
     var testRes = await fetch(url + '/rest/v1/feedbacks?limit=1', {
-      headers: {
-        'apikey': key,
-        'Authorization': 'Bearer ' + key
-      }
+      headers: await supaHeaders()
     });
     
     if (!testRes.ok) {
@@ -826,9 +897,10 @@ async function connectSupabase() {
       throw new Error(errData.message || 'テーブル "feedbacks" が存在するか確認してください');
     }
     
-    // Save to localStorage
+    // Save to localStorage（パスワードそのものは保存しない。トークンのみ）
     localStorage.setItem('wanvoice_supabase_url', url);
     localStorage.setItem('wanvoice_supabase_key', key);
+    localStorage.setItem('wanvoice_login_email', email);
     
     isConnected = true;
     status.className = 'setup-status success';
@@ -902,10 +974,7 @@ async function loadData() {
   
   try {
     var res = await fetch(supabaseUrl + '/rest/v1/feedbacks?order=created_at.desc', {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': 'Bearer ' + supabaseKey
-      }
+      headers: await supaHeaders()
     });
     
     if (!res.ok) throw new Error('データ取得エラー');
@@ -940,11 +1009,7 @@ async function refreshData() {
   
   try {
     var res = await fetch(supabaseUrl + '/rest/v1/feedbacks?order=created_at.desc', {
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': 'Bearer ' + supabaseKey,
-        'Cache-Control': 'no-cache'
-      }
+      headers: await supaHeaders({ 'Cache-Control': 'no-cache' })
     });
     
     if (!res.ok) throw new Error('更新エラー');
@@ -977,14 +1042,50 @@ async function refreshData() {
 }
 
 // ===== AUTO RECONNECT =====
-function autoReconnect() {
+async function autoReconnect() {
   var savedUrl = localStorage.getItem('wanvoice_supabase_url');
   var savedKey = localStorage.getItem('wanvoice_supabase_key');
-  
-  if (savedUrl && savedKey) {
-    document.getElementById('supabaseUrl').value = savedUrl;
-    document.getElementById('supabaseKey').value = savedKey;
-    connectSupabase();
+  var savedEmail = localStorage.getItem('wanvoice_login_email');
+  var refreshToken = localStorage.getItem('wanvoice_refresh_token');
+
+  if (!savedUrl || !savedKey) return;
+
+  document.getElementById('supabaseUrl').value = savedUrl;
+  document.getElementById('supabaseKey').value = savedKey;
+  if (savedEmail) document.getElementById('loginEmail').value = savedEmail;
+
+  // refresh_token が残っていれば、パスワード再入力なしでログイン状態を復元する
+  if (refreshToken) {
+    supabaseUrl = savedUrl;
+    supabaseKey = savedKey;
+    try {
+      var res = await fetch(savedUrl + '/auth/v1/token?grant_type=refresh_token', {
+        method: 'POST',
+        headers: { 'apikey': savedKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      if (!res.ok) throw new Error();
+      var tok = await res.json();
+      supabaseAccessToken = tok.access_token;
+      authExpiresAt = Date.now() + (tok.expires_in || 3600) * 1000;
+      localStorage.setItem('wanvoice_refresh_token', tok.refresh_token);
+      isAuthed = true;
+
+      var testRes = await fetch(savedUrl + '/rest/v1/feedbacks?limit=1', { headers: await supaHeaders() });
+      if (!testRes.ok) throw new Error();
+
+      isConnected = true;
+      document.getElementById('connStatus').textContent = 'LIVE';
+      document.getElementById('connStatus').classList.add('on');
+      await loadData();
+      document.getElementById('setupSection').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+      return;
+    } catch (e) {
+      // refresh 失敗。ログイン画面をそのまま出す（パスワード再入力してもらう）
+      isAuthed = false;
+      localStorage.removeItem('wanvoice_refresh_token');
+    }
   }
 }
 
@@ -1018,12 +1119,7 @@ async function addEntry() {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/feedbacks', {
         method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
+        headers: await supaHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
         body: JSON.stringify(newEntry)
       });
       
@@ -1090,11 +1186,7 @@ async function classifyAndUpdate(entry) {
     if (isConnected && entry.id) {
       await fetch(supabaseUrl + '/rest/v1/feedbacks?id=eq.' + entry.id, {
         method: 'PATCH',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey,
-          'Content-Type': 'application/json'
-        },
+        headers: await supaHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ category: category })
       });
     }
@@ -1117,10 +1209,7 @@ async function classifyFeedback(content) {
   }
   var res = await fetch(supabaseUrl + '/functions/v1/classify-feedback', {
     method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + supabaseKey,
-      'Content-Type': 'application/json'
-    },
+    headers: await supaHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ content: content })
   });
   if (!res.ok) throw new Error('classify-feedback HTTP ' + res.status);
@@ -1144,10 +1233,7 @@ async function deleteEntry(id) {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/feedbacks?id=eq.' + id, {
         method: 'DELETE',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey
-        }
+        headers: await supaHeaders()
       });
       if (!res.ok) throw new Error('削除エラー');
     } catch (err) {
@@ -1516,9 +1602,11 @@ function rebuildTopicDatalist() {
 
 // 接続設定リセット
 function resetSettings() {
-  if (!confirm('接続設定(URL/KEY)をリセットしますか?\n※ フィードバック履歴・スタッフ名・回の履歴は保持されます')) return;
+  if (!confirm('接続設定(URL/KEY/ログイン)をリセットしますか?\n※ フィードバック履歴・スタッフ名・回の履歴は保持されます')) return;
   localStorage.removeItem('wanvoice_supabase_url');
   localStorage.removeItem('wanvoice_supabase_key');
+  localStorage.removeItem('wanvoice_login_email');
+  localStorage.removeItem('wanvoice_refresh_token');
   location.reload();
 }
 
@@ -1715,12 +1803,7 @@ async function addSession() {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/sessions', {
         method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
+        headers: await supaHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
         body: JSON.stringify({ date: date, name: name })
       });
       if (!res.ok) {
@@ -1776,7 +1859,7 @@ async function renderSessionList() {
   if (isConnected) {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/sessions?order=date.desc', {
-        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+        headers: await supaHeaders()
       });
       if (!res.ok) throw new Error();
       sessions = await res.json();
@@ -1809,7 +1892,7 @@ async function deleteSession(id, name) {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/sessions?id=eq.' + id, {
         method: 'DELETE',
-        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+        headers: await supaHeaders()
       });
       if (!res.ok) throw new Error();
     } catch (e) {
@@ -1829,7 +1912,7 @@ async function onDateChange(val) {
   if (isConnected) {
     try {
       var res = await fetch(supabaseUrl + '/rest/v1/sessions?date=eq.' + val + '&limit=1', {
-        headers: { 'apikey': supabaseKey, 'Authorization': 'Bearer ' + supabaseKey }
+        headers: await supaHeaders()
       });
       if (!res.ok) return;
       var rows = await res.json();
@@ -1874,12 +1957,7 @@ document.getElementById('csvImport').addEventListener('change', async function(e
       if (isConnected && newEntries.length) {
         var res = await fetch(supabaseUrl + '/rest/v1/feedbacks', {
           method: 'POST',
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': 'Bearer ' + supabaseKey,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
+          headers: await supaHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
           body: JSON.stringify(newEntries)
         });
         if (!res.ok) throw new Error('インポートエラー');
