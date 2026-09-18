@@ -321,7 +321,6 @@ label.hbtn{position:relative}
 @media(min-width:900px){
   .load-more-btn{border:1px solid rgba(157,170,189,0.2)}
 }
-.data-item.dup{border-left:3px solid var(--hot)}
 .item-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .item-tags{display:flex;gap:6px;flex-wrap:wrap}
 /* カテゴリタグ：アイコン付き */
@@ -337,7 +336,7 @@ label.hbtn{position:relative}
 .item-meta span{display:inline-flex;align-items:center;gap:2px}
 .item-meta svg{width:16px;height:16px;stroke:#9daabd;fill:none;stroke-width:2;flex-shrink:0;opacity:1}
 
-/* list-sectionはHot!Voice用に残す */
+/* list-section */
 .list-section{background:var(--card);border:1px solid var(--b);border-radius:var(--r-card);padding:28px;box-shadow:var(--shadow-card),var(--highlight-top);max-width:100%;box-sizing:border-box}
 .list-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
 
@@ -1284,21 +1283,6 @@ function normalizeForSim(s) {
 }
 function ngrams(s, n) { var g = new Set(); for (var i = 0; i <= s.length - n; i++) g.add(s.substring(i, i + n)); return g; }
 function jaccard(g1, g2) { if (!g1.size || !g2.size) return 0; var n = 0; g1.forEach(function(x){ if (g2.has(x)) n++; }); var u = g1.size + g2.size - n; return u > 0 ? n / u : 0; }
-function calcSim(a, b) {
-  var s1 = normalizeForSim(a), s2 = normalizeForSim(b);
-  if (s1 === s2) return 1;
-  if (s1.length < 2 || s2.length < 2) return 0;
-  // bi-gram と tri-gram のハイブリッド(短文耐性+意味一致精度)
-  var bi = jaccard(ngrams(s1, 2), ngrams(s2, 2));
-  var tri = (s1.length >= 3 && s2.length >= 3) ? jaccard(ngrams(s1, 3), ngrams(s2, 3)) : bi;
-  // 部分包含ボーナス(短い方が長い方に含まれていたら加点)
-  var shorter = s1.length < s2.length ? s1 : s2;
-  var longer = s1.length < s2.length ? s2 : s1;
-  var contain = longer.indexOf(shorter) !== -1 ? 0.15 : 0;
-  return Math.min(1, bi * 0.35 + tri * 0.55 + contain);
-}
-function findDups() { var dups = [], checked = new Set(); for (var i = 0; i < data.length; i++) { if (checked.has(data[i].id)) continue; var sim = []; for (var j = i + 1; j < data.length; j++) { if (checked.has(data[j].id)) continue; var s = calcSim(data[i].content, data[j].content); if (s > 0.5) { sim.push({ item: data[j], sim: s }); checked.add(data[j].id); } } if (sim.length) { dups.push({ orig: data[i], sim: sim }); checked.add(data[i].id); } } return dups; }
-function getDupIds() { var dups = findDups(), ids = new Set(); dups.forEach(function(g) { ids.add(g.orig.id); g.sim.forEach(function(x) { ids.add(x.item.id); }); }); return ids; }
 
 // ===== ICONS (Lucide) =====
 var icons = {
@@ -1319,7 +1303,7 @@ var icons = {
 // ===== RENDER =====
 function renderStats() {
   var dashData = getDashData();
-  var st = getStats(dashData), dups = findDups();
+  var st = getStats(dashData);
   function statCard(cls, icon, label, val) {
     return '<div class="stat ' + cls + '">' +
       '<div class="stat-top"><span class="stat-icon">' + icon + '</span><span class="stat-label">' + label + '</span></div>' +
@@ -1329,7 +1313,6 @@ function renderStats() {
   document.getElementById('statsGrid').innerHTML =
     '<div class="stat-row-top">' +
       statCard('', icons.layers, '総件数', dashData.length) +
-      statCard('hot', icons.flame, 'Hot!Voice', dups.length) +
     '</div>' +
     '<div class="stat-row-bottom">' +
       statCard('good', icons.thumbsUp, '良かった点', st.cat['良かった点'] || 0) +
@@ -1401,7 +1384,7 @@ function renderList() {
 }
 
 function _renderListItems() {
-  var q = document.getElementById('searchInput').value.toLowerCase(), fs = document.getElementById('filterSession').value, fc = document.getElementById('filterCategory').value, dupIds = getDupIds();
+  var q = document.getElementById('searchInput').value.toLowerCase(), fs = document.getElementById('filterSession').value, fc = document.getElementById('filterCategory').value;
   var filtered = data.filter(function(d) { return (d.content.toLowerCase().indexOf(q) !== -1 || d.staff.toLowerCase().indexOf(q) !== -1 || (d.topic || '').toLowerCase().indexOf(q) !== -1) && (fs === 'all' || d.session === fs) && (fc === 'all' || d.category === fc); });
   if (!filtered.length) { document.getElementById('dataList').innerHTML = '<div class="empty">データがありません</div>'; return; }
   var tagIcons = {
@@ -1414,9 +1397,8 @@ function _renderListItems() {
   var remaining = filtered.length - _listShowCount;
   var html = '';
   visible.forEach(function(d) {
-    var isDup = dupIds.has(d.id);
     var icon = tagIcons[d.category] || tagIcons['その他'];
-    html += '<div class="data-item' + (isDup ? ' dup' : '') + '">' +
+    html += '<div class="data-item">' +
       '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div>' +
       '<button class="item-del-btn" onclick="deleteEntry(' + d.id + ')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button></div>' +
       '<div class="item-content">' + esc(d.content) + '</div>' +
