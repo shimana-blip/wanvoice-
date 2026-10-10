@@ -50,14 +50,13 @@
 
 ### Edge Function
 - `invite-user`：管理者による招待。
-- `classify-feedback`：有効なユーザーだけ呼べるように修正済み（`rpc/is_active` で確認）。
-- `sync-analyze` / `hot-sync` / `sync-chat` / `reflect`（Wan!Sync 用）：**未修正**。ログイン無し（anon key だけ）でも呼べて Claude API の料金が発生しうる。classify-feedback と同じガードを入れる予定。
+- `classify-feedback`（Wan!Voice）/ `sync-analyze` / `hot-sync` / `sync-chat` / `reflect`（Wan!Sync）：冒頭で `rpc/is_active` を呼び、有効なユーザー以外は 401（anon key だけでは Claude API を使わせない）。
+- ソースはすべて `supabase/functions/` にある。変更したら同じ内容でデプロイし、ここにも残す。
 
 ---
 
 ## 残タスク
 - 招待の実地テスト（テスト用メールアドレスで、招待 → パスワード設定 → スタッフでログイン）
-- Wan!Sync 用 Edge Function 4本にログインガードを追加
 - スタッフを個人アカウントへ移行し、共有アカウントのパスワードを変更
 - `sessions` テーブルの廃止（どちらのアプリも参照していない）
 
