@@ -85,6 +85,12 @@ body.modal-open{overflow:hidden;position:fixed;width:100%}
 /* LIVE バッジ：ブランド名の隣にインライン */
 .conn-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.08em;white-space:nowrap;flex-shrink:0;padding:0}
 .topic-chip{background:rgba(26,79,160,.08);color:var(--a);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.chip-group{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn{padding:9px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;text-align:left;line-height:1.4;transition:all 0.15s}
+.chip-btn:hover{border-color:rgba(26,79,160,0.35)}
+.chip-btn.selected{background:rgba(26,79,160,0.08);border-color:var(--a);color:var(--a);font-weight:600}
+.chip-btn .chip-sub{display:block;font-size:11px;color:var(--t3);font-weight:500}
+.chip-btn.selected .chip-sub{color:var(--a)}
 .conn-badge::before{content:'';width:7px;height:7px;min-width:7px;min-height:7px;border-radius:50%;background:var(--t4);flex-shrink:0}
 .conn-badge.on{color:#059669}
 .conn-badge.on::before{background:#10B981;box-shadow:0 0 0 3px rgba(16,185,129,0.2)}
@@ -711,17 +717,31 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 </div>
 </div>
 
-<!-- 回名（自由記述） -->
+<!-- 種別 -->
 <div class="form-group">
-<label class="form-label">回名の末尾<span style="font-size:11px;color:var(--t3);margin-left:6px">（BA / ADV / 体験会 など）</span></label>
-<input type="text" class="form-input" id="adminSessionSuffix" placeholder="BA" oninput="updateSessionPreview()">
+<label class="form-label">種別</label>
+<div class="chip-group" id="adminKindChips"></div>
+<input type="text" class="form-input" id="adminKindOther" placeholder="種別を入力...（例：映像）" style="display:none;margin-top:8px" oninput="updateSessionPreview()">
+</div>
+
+<!-- 使用AI -->
+<div class="form-group">
+<label class="form-label">使用AI</label>
+<div class="chip-group" id="adminAiChips"></div>
+<input type="text" class="form-input" id="adminAiOther" placeholder="AI名を入力..." style="display:none;margin-top:8px" oninput="updateSessionPreview()">
+</div>
+
+<!-- 会場（任意） -->
+<div class="form-group">
+<label class="form-label">会場 <span style="color:var(--t3);font-weight:400">（任意・同じ日に複数あるときの見分け用）</span></label>
+<input type="text" class="form-input" id="adminVenue" placeholder="例：青山 / 天神" oninput="updateSessionPreview()">
 </div>
 
 <!-- プレビュー -->
 <div id="sessionPreviewWrap" style="display:none;padding:12px 14px;background:rgba(26,79,160,0.06);border:1px solid rgba(26,79,160,0.18);border-radius:var(--r-btn);margin-bottom:16px">
-<div style="font-size:12px;color:var(--t2);margin-bottom:4px;font-weight:500">生成される回名</div>
+<div style="font-size:12px;color:var(--t2);margin-bottom:4px;font-weight:500">登録される回（EVENT ID）</div>
 <div id="sessionPreview" style="font-size:16px;font-weight:700;color:var(--a);letter-spacing:-0.01em"></div>
-<div style="font-size:11px;color:var(--t3);margin-top:4px">※ 登録後は入力モーダルで日付を選ぶと自動入力されます</div>
+<div style="font-size:11px;color:var(--t3);margin-top:4px">※ 同じ日に複数の回があるときは、入力時に会場ボタンで選べます</div>
 </div>
 
 <button class="setup-btn primary" onclick="addSession()" style="width:100%">登録する</button>
@@ -758,7 +778,11 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="modal-header"><div class="modal-title">新規フィードバック</div><button class="modal-close" onclick="closeModal()">×</button></div>
 <div class="form-row">
 <div class="form-group"><label class="form-label">日付</label><input type="date" class="form-input" id="inputDate" onchange="onDateChange(this.value)"></div>
-<div class="form-group"><label class="form-label">回</label><input type="text" class="form-input" id="inputSession" placeholder="第○回" list="sessionHistory" autocomplete="off"><datalist id="sessionHistory"></datalist></div>
+<div class="form-group"><label class="form-label">回</label><input type="text" class="form-input" id="inputSession" placeholder="第○回" list="sessionHistory" autocomplete="off" oninput="onSessionTyped()"><datalist id="sessionHistory"></datalist></div>
+</div>
+<div class="form-group" id="eventPickWrap" style="display:none">
+<label class="form-label">この日の回 <span style="color:var(--t3);font-weight:400">（どの会場か選んでください）</span></label>
+<div class="chip-group" id="eventPickChips"></div>
 </div>
 <div class="form-group"><label class="form-label">スタッフ名</label>
 <div class="custom-select-wrap" id="staffSelectWrap">
@@ -944,23 +968,23 @@ function useLocalMode() {
     {id:2,date:'2026-04-15',session:'260415_ビジョン_BA',category:'改善点',staff:'佐藤',content:'資料の文字が小さい'}
   ];
 
-  // ダミーsessionsデータ（初回のみセット）
-  var existingSessions = JSON.parse(localStorage.getItem('wanvoice_sessions') || '[]');
-  if (!existingSessions.length) {
+  // ダミーの回（初回のみセット）。今日は2会場にして、会場選択を試せるようにする。
+  if (!getLocalEvents().length) {
     var today = new Date();
     var fmt = function(d) {
       return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     };
-    var shortFmt = function(d) {
-      return String(d.getFullYear()).slice(2) + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    var mk = function(d, area, kind, ai, venue) {
+      var ds = fmt(d);
+      return { event_id: toYymmdd(ds) + '_' + area + '_' + kind + '_' + ai, date: ds, area: area, kind: kind, ai: ai, venue: venue, display_name: area + ' ' + kind + (venue ? '（' + venue + '）' : '') };
     };
     var d1 = new Date(today); d1.setDate(today.getDate() - 7);
-    var d2 = new Date(today);
     var d3 = new Date(today); d3.setDate(today.getDate() + 7);
-    saveLocalSessions([
-      { id: 1, date: fmt(d1), name: shortFmt(d1) + '_ビジョン_BA' },
-      { id: 2, date: fmt(d2), name: shortFmt(d2) + '_佐賀_ADV' },
-      { id: 3, date: fmt(d3), name: shortFmt(d3) + '_大名_BA' }
+    saveLocalEvents([
+      mk(d1, '東京', 'BA', 'クロード', null),
+      mk(today, '福岡', 'BA', 'クロード', '天神'),
+      mk(today, '佐賀', 'ADV', 'コパイロット', null),
+      mk(d3, '大阪', 'BA', 'クロード', null)
     ]);
   }
 
@@ -1091,17 +1115,18 @@ async function autoReconnect() {
 // ===== DATA OPERATIONS =====
 async function addEntry() {
   var d = document.getElementById('inputDate').value;
-  var s = document.getElementById('inputSession').value;
+  var s = document.getElementById('inputSession').value.trim();
   var st = _selectedStaff;
   var co = document.getElementById('inputContent').value;
   var tp = document.getElementById('inputTopic').value.trim();
 
   if (!d || !s || !st || !co) {
     if (!st) alert('スタッフ名を選択または追加してください');
+    else if (!s && _dayEvents.length > 1) alert('どの会場の回か選んでください');
     else alert('全て入力してください');
     return;
   }
-  
+
   // 初期値は「判定中...」で楽観的保存
   var newEntry = {
     date: d,
@@ -1111,6 +1136,8 @@ async function addEntry() {
     content: co,
     topic: tp || null
   };
+  // 登録済みの回を選んだときは event_id も送る（手入力のときは DB のトリガーが解決する）
+  if (_pickedEventId && _pickedEventId === s) newEntry.event_id = _pickedEventId;
   
   var savedEntry = null;
   
@@ -1152,6 +1179,7 @@ async function addEntry() {
     localStorage.setItem('wanvoice_staff_list', JSON.stringify(staffList));
   }
   localStorage.setItem('wanvoice_last_session', s);
+  localStorage.setItem('wanvoice_last_session_date', d);
   // 回の履歴を更新(重複排除、最新20件)
   var history = JSON.parse(localStorage.getItem('wanvoice_session_history') || '[]');
   history = history.filter(function(x){ return x !== s; });
@@ -1434,9 +1462,10 @@ function showToast(txt) {
 function openModal() {
   document.getElementById('modal').classList.add('show');
   document.body.classList.add('modal-open');
-  document.getElementById('inputDate').value = new Date().toISOString().split('T')[0];
-  var lastSession = localStorage.getItem('wanvoice_last_session') || '';
-  if (!document.getElementById('inputSession').value) document.getElementById('inputSession').value = lastSession;
+  var today = todayLocal();
+  document.getElementById('inputDate').value = today;
+  // 前回の回をそのまま使わず、今日の日付から回を決め直す（別の日・別会場のまま保存されるのを防ぐ）
+  onDateChange(today);
   rebuildSessionDatalist();
   rebuildTopicDatalist();
   rebuildStaffSelect();
@@ -1632,23 +1661,28 @@ function switchTab(tab) {
   } else if (tab === 'Admin') {
     document.getElementById('tabAdmin').classList.remove('hidden');
     rebuildAdminLocationDropdown();
+    rebuildKindAiChips();
     renderSessionList();
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===== ADMIN TAB =====
-var DEFAULT_LOCATIONS = ['ビジョン', '佐賀', '大名', 'テクノ'];
+// 回は events テーブルで管理する（EVENT ID = YYMMDD_土地名_種別_使用AI）。
+// 同じ日に複数の回を登録できる。旧 sessions テーブルには書き込まない。
+var DEFAULT_LOCATIONS = ['東京', '大阪', '福岡', '佐賀', '静岡'];
+var KIND_OPTIONS = ['BA', 'ADV', '体験会'];
+var AI_OPTIONS = ['クロード', 'コパイロット', 'NA'];
 var _selectedAdminLocation = '';
+var _selectedKind = 'BA';
+var _selectedAi = 'クロード';
+var _knownAreas = []; // 登録済みの events から拾った土地名
 
 function getLocationList() {
-  var stored = JSON.parse(localStorage.getItem('wanvoice_location_list') || 'null');
-  if (!stored) {
-    // 初回：デフォルトをセット
-    localStorage.setItem('wanvoice_location_list', JSON.stringify(DEFAULT_LOCATIONS));
-    return DEFAULT_LOCATIONS.slice();
-  }
-  return stored;
+  var stored = JSON.parse(localStorage.getItem('wanvoice_area_list') || '[]');
+  var list = DEFAULT_LOCATIONS.slice();
+  _knownAreas.concat(stored).forEach(function(a) { if (a && list.indexOf(a) === -1) list.push(a); });
+  return list;
 }
 
 function rebuildAdminLocationDropdown() {
@@ -1715,12 +1749,12 @@ function hideNewLocationInput() {
 }
 
 function saveNewLocation() {
-  var name = document.getElementById('inputLocationNew').value.trim();
+  var name = cleanPart(document.getElementById('inputLocationNew').value);
   if (!name) { alert('場所名を入力してください'); return; }
-  var list = getLocationList();
-  if (list.indexOf(name) === -1) {
-    list.push(name);
-    localStorage.setItem('wanvoice_location_list', JSON.stringify(list));
+  var stored = JSON.parse(localStorage.getItem('wanvoice_area_list') || '[]');
+  if (stored.indexOf(name) === -1) {
+    stored.push(name);
+    localStorage.setItem('wanvoice_area_list', JSON.stringify(stored));
   }
   localStorage.setItem('wanvoice_last_location', name);
   _selectedAdminLocation = name;
@@ -1738,42 +1772,84 @@ document.addEventListener('click', function(e) {
   if (wrap && !wrap.contains(e.target)) closeAdminLocationDropdown();
 });
 
-// 回名プレビューを更新
-function updateSessionPreview() {
-  var date = document.getElementById('adminDate').value;
-  var loc = _selectedAdminLocation || document.getElementById('inputLocationNew').value.trim();
-  var suffix = document.getElementById('adminSessionSuffix').value.trim();
-  var wrap = document.getElementById('sessionPreviewWrap');
-  var preview = document.getElementById('sessionPreview');
-
-  if (!date || !loc) { wrap.style.display = 'none'; return; }
-
-  // 日付を YYMMDD 形式に変換
-  var d = new Date(date);
-  var yy = String(d.getFullYear()).slice(2);
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var dd = String(d.getDate()).padStart(2, '0');
-  var name = yy + mm + dd + '_' + loc + (suffix ? '_' + suffix : '');
-  preview.textContent = name;
-  wrap.style.display = 'block';
-  return name;
+// 種別・使用AIのボタン。「その他」を選ぶと自由入力欄を出す。
+function renderChoiceChips(containerId, options, selected, onPick) {
+  var el = document.getElementById(containerId);
+  el.innerHTML = '';
+  options.concat(['その他']).forEach(function(opt) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (opt === selected ? ' selected' : '');
+    b.textContent = opt;
+    b.onclick = function() { onPick(opt); };
+    el.appendChild(b);
+  });
 }
 
-// 回を登録
-async function addSession() {
+function rebuildKindAiChips() {
+  renderChoiceChips('adminKindChips', KIND_OPTIONS, _selectedKind, function(v) { _selectedKind = v; rebuildKindAiChips(); });
+  renderChoiceChips('adminAiChips', AI_OPTIONS, _selectedAi, function(v) { _selectedAi = v; rebuildKindAiChips(); });
+  document.getElementById('adminKindOther').style.display = _selectedKind === 'その他' ? 'block' : 'none';
+  document.getElementById('adminAiOther').style.display = _selectedAi === 'その他' ? 'block' : 'none';
+  updateSessionPreview();
+}
+
+function currentKind() { return _selectedKind === 'その他' ? document.getElementById('adminKindOther').value : _selectedKind; }
+function currentAi() { return _selectedAi === 'その他' ? document.getElementById('adminAiOther').value : _selectedAi; }
+
+// EVENT ID の区切りは「_」なので、各部分から「_」と空白を取り除く
+function cleanPart(s) { return (s || '').replace(/[_\s　]+/g, ''); }
+
+// 'YYYY-MM-DD' → 'YYMMDD'（Date を通さないのでタイムゾーンでずれない）
+function toYymmdd(dateStr) { var p = dateStr.split('-'); return p[0].slice(2) + p[1] + p[2]; }
+
+// 端末の日付（日本時間）を 'YYYY-MM-DD' で返す。toISOString は UTC なので朝9時前に前日になる。
+function todayLocal() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// 入力欄から登録する events の行を組み立てる。足りなければ null。
+function buildEventDraft() {
   var date = document.getElementById('adminDate').value;
-  var loc = _selectedAdminLocation;
-  var suffix = document.getElementById('adminSessionSuffix').value.trim();
+  var area = cleanPart(_selectedAdminLocation || document.getElementById('inputLocationNew').value);
+  var kind = cleanPart(currentKind());
+  var ai = cleanPart(currentAi());
+  var venue = document.getElementById('adminVenue').value.trim();
+  if (!date || !area || !kind || !ai) return null;
+  return {
+    event_id: toYymmdd(date) + '_' + area + '_' + kind + '_' + ai,
+    date: date,
+    area: area,
+    kind: kind,
+    ai: ai,
+    venue: venue || null,
+    display_name: area + ' ' + kind + (venue ? '（' + venue + '）' : '')
+  };
+}
+
+// 回名プレビューを更新
+function updateSessionPreview() {
+  var wrap = document.getElementById('sessionPreviewWrap');
+  var preview = document.getElementById('sessionPreview');
+  var ev = buildEventDraft();
+  if (!ev) { wrap.style.display = 'none'; return; }
+  preview.textContent = ev.event_id + (ev.venue ? '（' + ev.venue + '）' : '');
+  wrap.style.display = 'block';
+  return ev.event_id;
+}
+
+function duplicateEventMessage(id) {
+  return '「' + id + '」は既に登録されています。同じ日に同じ場所・種別・AIの回を分けたいときは、場所名に会場を足してください（例：東京青山）';
+}
+
+// 回を登録（events に INSERT）
+async function addSession() {
   var status = document.getElementById('adminStatus');
-
-  if (!date) { alert('日付を選択してください'); return; }
-  if (!loc) { alert('場所を選択または追加してください'); return; }
-
-  var d = new Date(date);
-  var yy = String(d.getFullYear()).slice(2);
-  var mm = String(d.getMonth() + 1).padStart(2, '0');
-  var dd = String(d.getDate()).padStart(2, '0');
-  var name = yy + mm + dd + '_' + loc + (suffix ? '_' + suffix : '');
+  if (!document.getElementById('adminDate').value) { alert('日付を選択してください'); return; }
+  if (!_selectedAdminLocation) { alert('場所を選択または追加してください'); return; }
+  var ev = buildEventDraft();
+  if (!ev) { alert('種別と使用AIを選んでください'); return; }
 
   status.className = 'setup-status';
   status.style.display = 'block';
@@ -1781,133 +1857,181 @@ async function addSession() {
   status.style.color = 'var(--t2)';
   status.textContent = '登録中...';
 
-  if (isConnected) {
-    try {
-      var res = await fetch(supabaseUrl + '/rest/v1/sessions', {
+  try {
+    if (isConnected) {
+      var res = await fetch(supabaseUrl + '/rest/v1/events', {
         method: 'POST',
         headers: await supaHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
-        body: JSON.stringify({ date: date, name: name })
+        body: JSON.stringify(ev)
       });
       if (!res.ok) {
-        var err = await res.json();
+        var err = await res.json().catch(function(){ return {}; });
+        if (err.code === '23505') throw new Error(duplicateEventMessage(ev.event_id));
         throw new Error(err.message || '登録エラー');
       }
-      status.className = 'setup-status success';
-      status.textContent = '✅ 登録しました：' + name;
-      localStorage.setItem('wanvoice_last_location', loc);
-      document.getElementById('adminDate').value = '';
-      document.getElementById('adminSessionSuffix').value = '';
-      document.getElementById('sessionPreviewWrap').style.display = 'none';
-      renderSessionList();
-    } catch (err) {
-      status.className = 'setup-status error';
-      status.textContent = '❌ 登録失敗：' + err.message;
+    } else {
+      // ローカルモード：localStorageに保存
+      var localEvents = getLocalEvents();
+      if (localEvents.some(function(e){ return e.event_id === ev.event_id; })) throw new Error(duplicateEventMessage(ev.event_id));
+      localEvents.push(ev);
+      saveLocalEvents(localEvents);
     }
-  } else {
-    // ローカルモード：localStorageに保存
-    var localSessions = getLocalSessions();
-    var exists = localSessions.find(function(s){ return s.date === date; });
-    if (exists) {
-      if (!confirm('同じ日付の回「' + exists.name + '」が既にあります。上書きしますか？')) {
-        status.style.display = 'none';
-        return;
-      }
-      localSessions = localSessions.filter(function(s){ return s.date !== date; });
-    }
-    localSessions.push({ id: Date.now(), date: date, name: name });
-    saveLocalSessions(localSessions);
-    status.className = 'setup-status success';
-    status.textContent = '✅ 登録しました：' + name;
-    localStorage.setItem('wanvoice_last_location', loc);
-    document.getElementById('adminDate').value = '';
-    document.getElementById('adminSessionSuffix').value = '';
-    document.getElementById('sessionPreviewWrap').style.display = 'none';
-    renderSessionList();
+  } catch (err) {
+    status.className = 'setup-status error';
+    status.textContent = '❌ 登録失敗：' + err.message;
+    return;
   }
+
+  status.className = 'setup-status success';
+  status.textContent = '✅ 登録しました：' + ev.event_id;
+  localStorage.setItem('wanvoice_last_location', _selectedAdminLocation);
+  // 同じ日に続けて別の会場を登録しやすいよう、日付・場所は残して会場だけ空にする
+  document.getElementById('adminVenue').value = '';
+  updateSessionPreview();
+  renderSessionList();
 }
 
-// ローカルセッションのhelper
-function getLocalSessions() {
-  return JSON.parse(localStorage.getItem('wanvoice_sessions') || '[]');
+// ローカルモード用の events
+function getLocalEvents() {
+  return JSON.parse(localStorage.getItem('wanvoice_events') || '[]');
 }
-function saveLocalSessions(sessions) {
-  localStorage.setItem('wanvoice_sessions', JSON.stringify(sessions));
+function saveLocalEvents(events) {
+  localStorage.setItem('wanvoice_events', JSON.stringify(events));
 }
 
 // 登録済み回一覧を表示
 async function renderSessionList() {
   var container = document.getElementById('sessionList');
-  var sessions = [];
+  var events = [];
   if (isConnected) {
     try {
-      var res = await fetch(supabaseUrl + '/rest/v1/sessions?order=date.desc', {
+      var res = await fetch(supabaseUrl + '/rest/v1/events?select=event_id,date,area,kind,ai,venue,display_name&order=date.desc,event_id.asc', {
         headers: await supaHeaders()
       });
       if (!res.ok) throw new Error();
-      sessions = await res.json();
+      events = await res.json();
     } catch (e) {
       container.innerHTML = '<div class="empty">読み込みエラー</div>';
       return;
     }
   } else {
-    sessions = getLocalSessions().sort(function(a,b){ return b.date.localeCompare(a.date); });
+    events = getLocalEvents().sort(function(a,b){ return b.date.localeCompare(a.date) || a.event_id.localeCompare(b.event_id); });
   }
-  if (!sessions.length) {
+
+  // 登録済みの土地名を場所の候補に加える
+  _knownAreas = [];
+  events.forEach(function(e) { if (e.area && _knownAreas.indexOf(e.area) === -1) _knownAreas.push(e.area); });
+  rebuildAdminLocationDropdown();
+
+  if (!events.length) {
     container.innerHTML = '<div class="empty">まだ回が登録されていません</div>';
     return;
   }
-  container.innerHTML = sessions.map(function(s) {
+  container.innerHTML = events.map(function(e) {
     return '<div class="session-item">' +
       '<div style="min-width:0;overflow:hidden">' +
-        '<div style="font-size:15px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(s.name) + '</div>' +
-        '<div style="font-size:12px;color:var(--t3);margin-top:3px">' + esc(s.date) + '</div>' +
+        '<div style="font-size:15px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(e.display_name || e.event_id) + '</div>' +
+        '<div style="font-size:12px;color:var(--t3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(e.date) + '　' + esc(e.event_id) + (e.venue ? '　' + esc(e.venue) : '') + '</div>' +
       '</div>' +
-      '<button class="item-del-btn" onclick="deleteSession(' + s.id + ', \'' + esc(s.name) + '\')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button>' +
+      '<button class="item-del-btn" data-id="' + esc(e.event_id) + '" onclick="deleteSession(this)" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button>' +
     '</div>';
   }).join('');
 }
 
-// 回を削除
-async function deleteSession(id, name) {
-  if (!confirm('「' + name + '」を削除しますか？')) return;
+// 回を削除（フィードバック等が紐づく回は、外部キー制約で DB が拒否する）
+async function deleteSession(btn) {
+  var id = btn.getAttribute('data-id');
+  if (!confirm('「' + id + '」を削除しますか？')) return;
   if (isConnected) {
     try {
-      var res = await fetch(supabaseUrl + '/rest/v1/sessions?id=eq.' + id, {
+      var res = await fetch(supabaseUrl + '/rest/v1/events?event_id=eq.' + encodeURIComponent(id), {
         method: 'DELETE',
-        headers: await supaHeaders()
+        headers: await supaHeaders({ 'Prefer': 'return=representation' })
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        var err = await res.json().catch(function(){ return {}; });
+        if (err.code === '23503') { alert('この回にはフィードバックやアンケートが紐づいているため削除できません'); return; }
+        throw new Error();
+      }
+      var rows = await res.json();
+      if (!rows.length) { alert('削除できませんでした'); return; }
     } catch (e) {
       alert('削除に失敗しました'); return;
     }
   } else {
-    var localSessions = getLocalSessions().filter(function(s){ return s.id !== id; });
-    saveLocalSessions(localSessions);
+    saveLocalEvents(getLocalEvents().filter(function(e){ return e.event_id !== id; }));
   }
   renderSessionList();
 }
 
-// ===== 日付選択で回を自動入力 =====
+// ===== 日付から回を決める =====
+// その日の events が1件なら自動で選び、2件以上なら会場ボタンを並べてスタッフに選んでもらう。
+var _dayEvents = [];
+var _pickedEventId = null;
+
 async function onDateChange(val) {
-  if (!val) return;
   var sessionInput = document.getElementById('inputSession');
-  if (isConnected) {
-    try {
-      var res = await fetch(supabaseUrl + '/rest/v1/sessions?date=eq.' + val + '&limit=1', {
-        headers: await supaHeaders()
-      });
-      if (!res.ok) return;
-      var rows = await res.json();
-      sessionInput.value = rows.length ? rows[0].name : '';
-      sessionInput.placeholder = rows.length ? '第○回' : '該当なし（手入力）';
-    } catch (e) {}
-  } else {
-    // ローカルモード
-    var localSessions = getLocalSessions();
-    var match = localSessions.find(function(s){ return s.date === val; });
-    sessionInput.value = match ? match.name : '';
-    sessionInput.placeholder = match ? '第○回' : '該当なし（手入力）';
+  _dayEvents = [];
+  _pickedEventId = null;
+  if (val) {
+    if (isConnected) {
+      try {
+        var res = await fetch(supabaseUrl + '/rest/v1/events?date=eq.' + val + '&select=event_id,date,area,kind,ai,venue,display_name&order=event_id.asc', {
+          headers: await supaHeaders()
+        });
+        if (res.ok) _dayEvents = await res.json();
+      } catch (e) {}
+    } else {
+      _dayEvents = getLocalEvents().filter(function(e){ return e.date === val; });
+    }
   }
+
+  // この端末で前回選んだ回がその日の候補にあれば優先する
+  var last = localStorage.getItem('wanvoice_last_session') || '';
+  var pre = _dayEvents.filter(function(e){ return e.event_id === last; })[0] || (_dayEvents.length === 1 ? _dayEvents[0] : null);
+  if (pre) {
+    pickEvent(pre.event_id);
+    return;
+  }
+  if (_dayEvents.length) {
+    sessionInput.value = '';
+    sessionInput.placeholder = '下から会場を選んでください';
+  } else {
+    // 登録された回がない日は手入力。同じ日に手入力した回名だけは引き継ぐ。
+    var lastDate = localStorage.getItem('wanvoice_last_session_date') || '';
+    sessionInput.value = (lastDate === val) ? last : '';
+    sessionInput.placeholder = '該当なし（手入力）';
+  }
+  renderEventPick();
+}
+
+function pickEvent(id) {
+  _pickedEventId = id;
+  document.getElementById('inputSession').value = id;
+  renderEventPick();
+}
+
+// 手で書き換えたら、候補と一致するかで選択状態を合わせる
+function onSessionTyped() {
+  var v = document.getElementById('inputSession').value.trim();
+  _pickedEventId = _dayEvents.some(function(e){ return e.event_id === v; }) ? v : null;
+  renderEventPick();
+}
+
+function renderEventPick() {
+  var wrap = document.getElementById('eventPickWrap');
+  var box = document.getElementById('eventPickChips');
+  if (_dayEvents.length < 2) { wrap.style.display = 'none'; box.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  box.innerHTML = '';
+  _dayEvents.forEach(function(e) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (e.event_id === _pickedEventId ? ' selected' : '');
+    b.innerHTML = esc(e.display_name || e.event_id) + '<span class="chip-sub">' + esc(e.event_id) + (e.venue ? '　' + esc(e.venue) : '') + '</span>';
+    b.onclick = function() { pickEvent(e.event_id); };
+    box.appendChild(b);
+  });
 }
 
 // ===== CSV =====
@@ -1963,7 +2087,7 @@ initVoice();
 autoReconnect();
 rebuildSessionDatalist();
 rebuildTopicDatalist();
-document.getElementById('adminDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('adminDate').value = todayLocal();
 </script>
 </body>
 </html>
