@@ -115,6 +115,13 @@ label.hbtn{position:relative}
 .menu-item.danger{color:#DC2626}
 .menu-item.danger:hover{background:rgba(220,38,38,0.06)}
 .menu-divider{height:1px;background:var(--b);margin:4px 0}
+.menu-user{padding:8px 12px 6px;font-size:13px;color:var(--t1);font-weight:600}
+.menu-user:empty{display:none}
+.menu-user .role{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:6px;font-size:11px;font-weight:600;background:rgba(26,79,160,.08);color:var(--a)}
+/* スタッフには管理者用の操作を見せない（実際の制限は DB の RLS） */
+body.role-staff .admin-only{display:none !important}
+.staff-fixed{padding:12px 14px;background:var(--card-2);border:1px solid var(--b);border-radius:var(--r-btn);color:var(--t1);font-size:14px}
+.setup-link{background:none;border:none;color:var(--a);font-size:13px;font-weight:500;cursor:pointer;padding:6px 0;margin-top:8px;font-family:inherit}
 
 .mn{padding:32px 24px;padding-bottom:calc(120px + var(--sb));max-width:1200px;margin:0 auto}
 
@@ -559,12 +566,13 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 </button>
 <div class="overflow-menu" id="overflowMenu">
-<button class="menu-item" onclick="switchTab('Admin');closeOverflowMenu()">
+<div class="menu-user" id="menuUser"></div>
+<button class="menu-item admin-only" onclick="switchTab('Admin');closeOverflowMenu()">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
 回を管理
 </button>
-<div class="menu-divider"></div>
-<label class="menu-item">
+<div class="menu-divider admin-only"></div>
+<label class="menu-item admin-only">
 <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
 インポート
 <input type="file" id="csvImport" accept=".csv" style="position:absolute;opacity:0;width:0;height:0">
@@ -574,6 +582,10 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 エクスポート
 </button>
 <div class="menu-divider"></div>
+<button class="menu-item" id="logoutMenuItem" style="display:none" onclick="logout();closeOverflowMenu()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+ログアウト
+</button>
 <button class="menu-item danger" onclick="resetSettings();closeOverflowMenu()">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 接続設定リセット
@@ -612,14 +624,42 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 </div>
 <div>
 <label class="setup-label">パスワード</label>
-<input type="password" class="setup-input" id="loginPassword" placeholder="共有パスワード" autocomplete="current-password">
+<input type="password" class="setup-input" id="loginPassword" placeholder="パスワード" autocomplete="current-password">
 </div>
 </div>
 <div class="setup-btns">
 <button class="setup-btn primary" onclick="connectSupabase()">🔌 接続</button>
 <button class="setup-btn secondary" onclick="useLocalMode()">📱 ローカルモードで使う</button>
 </div>
+<button type="button" class="setup-link" onclick="requestPasswordReset()">パスワードを忘れた場合</button>
 <div class="setup-status" id="setupStatus"></div>
+</div>
+</div>
+
+<!-- 招待メール／パスワード再設定メールのリンクから来たとき -->
+<div class="setup-section hidden" id="passwordSetSection">
+<div class="setup-header">
+<div class="setup-icon">🔑</div>
+<div>
+<div class="setup-title">パスワードを設定</div>
+<div class="setup-desc" id="passwordSetDesc">これから使うパスワードを決めてください（8文字以上）</div>
+</div>
+</div>
+<div class="setup-form">
+<div class="setup-row">
+<div>
+<label class="setup-label">新しいパスワード</label>
+<input type="password" class="setup-input" id="newPassword" autocomplete="new-password">
+</div>
+<div>
+<label class="setup-label">もう一度入力</label>
+<input type="password" class="setup-input" id="newPassword2" autocomplete="new-password">
+</div>
+</div>
+<div class="setup-btns">
+<button class="setup-btn primary" onclick="submitNewPassword()">設定してはじめる</button>
+</div>
+<div class="setup-status" id="passwordSetStatus"></div>
 </div>
 </div>
 
@@ -785,6 +825,7 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="chip-group" id="eventPickChips"></div>
 </div>
 <div class="form-group"><label class="form-label">スタッフ名</label>
+<div class="staff-fixed" id="staffFixed" style="display:none"></div>
 <div class="custom-select-wrap" id="staffSelectWrap">
   <button type="button" class="custom-select-btn" id="staffSelectBtn" onclick="toggleStaffDropdown()">
     <span id="staffSelectLabel">選択してください</span>
@@ -912,6 +953,7 @@ async function connectSupabase() {
     supabaseKey = key;
 
     await loginSupabase(url, key, email, pass);
+    await loadProfile();
 
     status.textContent = '接続中...';
     
@@ -1070,6 +1112,157 @@ async function refreshData() {
 }
 
 // ===== AUTO RECONNECT =====
+// ===== ログイン中のユーザー（profiles）と役割 =====
+// role: 'admin' | 'staff'。画面の出し分けは見た目だけで、実際の制限は DB の RLS が行う。
+var currentProfile = null;
+
+function isAdminUser() {
+  // ローカルモードと、profiles がまだ無い DB（Step 3-1 適用前）は管理者扱い
+  return !currentProfile || currentProfile.role === 'admin';
+}
+
+function jwtSub(token) {
+  try {
+    var p = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(atob(p)))).sub || null;
+  } catch (e) { return null; }
+}
+
+async function loadProfile() {
+  var uid = jwtSub(supabaseAccessToken);
+  var res = await fetch(supabaseUrl + '/rest/v1/profiles?id=eq.' + uid + '&select=id,display_name,role,active', {
+    headers: await supaHeaders()
+  });
+  if (!res.ok) {
+    var err = await res.json().catch(function(){ return {}; });
+    // profiles テーブルが無い（Step 3-1 適用前）なら、これまでどおり管理者として動かす
+    if (res.status === 404 || err.code === '42P01' || err.code === 'PGRST205') {
+      currentProfile = { role: 'admin', display_name: '', active: true, legacy: true };
+      applyRoleUI();
+      return;
+    }
+    throw new Error(err.message || 'ユーザー情報を読み込めませんでした');
+  }
+  var rows = await res.json();
+  if (!rows.length || !rows[0].active) {
+    localStorage.removeItem('wanvoice_refresh_token');
+    isAuthed = false;
+    var msg = 'このアカウントは現在利用できません。管理者に連絡してください。';
+    var status = document.getElementById('setupStatus');
+    status.className = 'setup-status error';
+    status.textContent = '❌ ' + msg;
+    throw new Error(msg);
+  }
+  currentProfile = rows[0];
+  applyRoleUI();
+}
+
+function applyRoleUI() {
+  document.body.classList.toggle('role-staff', !isAdminUser());
+  var mu = document.getElementById('menuUser');
+  if (currentProfile && !currentProfile.legacy) {
+    mu.innerHTML = esc(currentProfile.display_name || '') +
+      '<span class="role">' + (currentProfile.role === 'admin' ? '管理者' : 'スタッフ') + '</span>';
+  } else {
+    mu.innerHTML = '';
+  }
+  document.getElementById('logoutMenuItem').style.display = isAuthed ? '' : 'none';
+}
+
+// ログアウト：このブラウザのログイン状態を消す（接続先の設定は残す）
+async function logout() {
+  if (!confirm('ログアウトしますか？')) return;
+  try {
+    await fetch(supabaseUrl + '/auth/v1/logout', { method: 'POST', headers: await supaHeaders() });
+  } catch (e) {}
+  localStorage.removeItem('wanvoice_refresh_token');
+  location.reload();
+}
+
+// パスワード再設定メールを送る（届いたリンクからこの画面に戻り、新しいパスワードを決める）
+async function requestPasswordReset() {
+  var url = document.getElementById('supabaseUrl').value.trim();
+  var key = document.getElementById('supabaseKey').value.trim();
+  var email = document.getElementById('loginEmail').value.trim();
+  var status = document.getElementById('setupStatus');
+  if (!url || !key) { alert('接続先（URL / Anon Key）が設定されていません'); return; }
+  if (!email) { alert('メールアドレスを入力してから押してください'); return; }
+  if (!confirm(email + ' にパスワード再設定のメールを送りますか？')) return;
+  var redirectTo = location.origin + location.pathname;
+  var res = await fetch(url + '/auth/v1/recover?redirect_to=' + encodeURIComponent(redirectTo), {
+    method: 'POST',
+    headers: { 'apikey': key, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email })
+  });
+  status.style.display = 'block';
+  if (res.ok) {
+    status.className = 'setup-status success';
+    status.textContent = '✅ メールを送りました。メール内のリンクから新しいパスワードを設定してください。';
+  } else {
+    var err = await res.json().catch(function(){ return {}; });
+    status.className = 'setup-status error';
+    status.textContent = '❌ 送信できませんでした：' + (err.msg || err.error_description || res.status);
+  }
+}
+
+// 招待メール／再設定メールのリンク（#access_token=...&type=invite|recovery）で来たときの処理
+var _linkSession = null;
+
+function handleAuthLink() {
+  if (!location.hash || location.hash.length < 2) return false;
+  var p = new URLSearchParams(location.hash.slice(1));
+  if (p.get('error')) {
+    history.replaceState(null, '', location.pathname + location.search);
+    var status = document.getElementById('setupStatus');
+    status.style.display = 'block';
+    status.className = 'setup-status error';
+    status.textContent = '❌ リンクが無効か期限切れです。管理者に招待のやり直しを頼むか、「パスワードを忘れた場合」から再設定してください。';
+    return false;
+  }
+  var type = p.get('type');
+  if (!p.get('access_token') || (type !== 'invite' && type !== 'recovery' && type !== 'signup')) return false;
+  _linkSession = { access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), type: type };
+  history.replaceState(null, '', location.pathname + location.search);
+  document.getElementById('setupSection').classList.add('hidden');
+  document.getElementById('passwordSetSection').classList.remove('hidden');
+  document.getElementById('passwordSetDesc').textContent = type === 'recovery'
+    ? '新しいパスワードを決めてください（8文字以上）'
+    : 'Wan!Voice へようこそ。これから使うパスワードを決めてください（8文字以上）';
+  return true;
+}
+
+async function submitNewPassword() {
+  var p1 = document.getElementById('newPassword').value;
+  var p2 = document.getElementById('newPassword2').value;
+  var status = document.getElementById('passwordSetStatus');
+  status.style.display = 'block';
+  if (p1.length < 8) { status.className = 'setup-status error'; status.textContent = '❌ 8文字以上にしてください'; return; }
+  if (p1 !== p2) { status.className = 'setup-status error'; status.textContent = '❌ 2回の入力が一致しません'; return; }
+  var url = document.getElementById('supabaseUrl').value.trim();
+  var key = document.getElementById('supabaseKey').value.trim();
+  if (!url || !key) { status.className = 'setup-status error'; status.textContent = '❌ 接続先が設定されていません'; return; }
+  var res = await fetch(url + '/auth/v1/user', {
+    method: 'PUT',
+    headers: { 'apikey': key, 'Authorization': 'Bearer ' + _linkSession.access_token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: p1 })
+  });
+  if (!res.ok) {
+    var err = await res.json().catch(function(){ return {}; });
+    status.className = 'setup-status error';
+    status.textContent = '❌ 設定できませんでした：' + (err.msg || err.error_description || res.status);
+    return;
+  }
+  // 設定できたら、そのままログイン状態にして画面を開く
+  localStorage.setItem('wanvoice_supabase_url', url);
+  localStorage.setItem('wanvoice_supabase_key', key);
+  if (_linkSession.refresh_token) localStorage.setItem('wanvoice_refresh_token', _linkSession.refresh_token);
+  status.className = 'setup-status success';
+  status.textContent = '✅ パスワードを設定しました';
+  document.getElementById('passwordSetSection').classList.add('hidden');
+  document.getElementById('setupSection').classList.remove('hidden');
+  await autoReconnect();
+}
+
 // 配信元に接続先がある場合は、URL / Anon Key 欄を埋めて隠し、ログイン欄だけにする
 function applyBuiltinConfig() {
   if (!hasBuiltinConfig) return;
@@ -1108,6 +1301,7 @@ async function autoReconnect() {
       authExpiresAt = Date.now() + (tok.expires_in || 3600) * 1000;
       localStorage.setItem('wanvoice_refresh_token', tok.refresh_token);
       isAuthed = true;
+      await loadProfile();
 
       var testRes = await fetch(savedUrl + '/rest/v1/feedbacks?limit=1', { headers: await supaHeaders() });
       if (!testRes.ok) throw new Error();
@@ -1443,7 +1637,7 @@ function _renderListItems() {
     var icon = tagIcons[d.category] || tagIcons['その他'];
     html += '<div class="data-item">' +
       '<div class="item-header"><div class="item-tags"><span class="tag ' + catColors[d.category] + '">' + icon + esc(d.category) + '</span></div>' +
-      '<button class="item-del-btn" onclick="deleteEntry(' + d.id + ')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button></div>' +
+      '<button class="item-del-btn admin-only" onclick="deleteEntry(' + d.id + ')" aria-label="削除"><svg viewBox="0 0 24 24" fill="none"><path fill="currentColor" d="M7.30775 20.5C6.80908 20.5 6.38308 20.3234 6.02975 19.9702C5.67658 19.6169 5.5 19.1909 5.5 18.6923V6H4.5V4.5H9V3.6155H15V4.5H19.5V6H18.5V18.6923C18.5 19.1974 18.325 19.625 17.975 19.975C17.625 20.325 17.1974 20.5 16.6923 20.5H7.30775ZM17 6H7V18.6923C7 18.7821 7.02883 18.8558 7.0865 18.9135C7.14417 18.9712 7.21792 19 7.30775 19H16.6923C16.7693 19 16.8398 18.9679 16.9038 18.9038C16.9679 18.8398 17 18.7693 17 18.6923V6ZM9.404 17H10.9037V8H9.404V17ZM13.0962 17H14.596V8H13.0962V17Z"/></svg></button></div>' +
       '<div class="item-content">' + esc(d.content) + '</div>' +
       '<div class="item-meta"><span>' + icons.bookmark + esc(d.session) + '</span><span>' + icons.user + esc(d.staff) + '</span>' + (d.topic ? '<span class="topic-chip">' + esc(d.topic) + '</span>' : '') + '</div>' +
     '</div>';
@@ -1490,6 +1684,19 @@ function openModal() {
 var _selectedStaff = '';
 
 function rebuildStaffSelect() {
+  // スタッフの個人アカウントは、スタッフ名をログイン中の表示名に固定する。
+  // 管理者は今は共有アカウントとして複数人が使っているので、従来どおり選べるようにしておく。
+  var fixed = document.getElementById('staffFixed');
+  var useFixed = currentProfile && currentProfile.role === 'staff' && currentProfile.display_name;
+  fixed.style.display = useFixed ? 'block' : 'none';
+  document.getElementById('staffSelectWrap').style.display = useFixed ? 'none' : '';
+  if (useFixed) {
+    _selectedStaff = currentProfile.display_name;
+    fixed.textContent = currentProfile.display_name;
+    hideNewStaffInput();
+    return;
+  }
+
   var staffList = JSON.parse(localStorage.getItem('wanvoice_staff_list') || '[]');
   var lastStaff = localStorage.getItem('wanvoice_last_staff') || '';
   // 既存ユーザーのlast_staffをstaff_listに自動移行
@@ -1674,6 +1881,7 @@ function switchTab(tab) {
     document.querySelectorAll('.nav-btn')[1].classList.add('active');
     renderList();
   } else if (tab === 'Admin') {
+    if (!isAdminUser()) { switchTab('Dash'); return; }
     document.getElementById('tabAdmin').classList.remove('hidden');
     rebuildAdminLocationDropdown();
     rebuildKindAiChips();
@@ -2058,6 +2266,7 @@ function exportCSV() {
 
 document.getElementById('csvImport').addEventListener('change', async function(e) {
   var f = e.target.files[0]; if (!f) return;
+  if (!isAdminUser()) { alert('インポートは管理者だけが使えます'); e.target.value = ''; return; }
   var r = new FileReader(); r.onload = async function(ev) {
     try {
       var lines = ev.target.result.split('\n'), hd = lines[0].split(',').map(function(h) { return h.trim().replace(/"/g, ''); }), cnt = 0;
@@ -2100,7 +2309,7 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 // ===== INIT =====
 initVoice();
 applyBuiltinConfig();
-autoReconnect();
+if (!handleAuthLink()) autoReconnect();
 rebuildSessionDatalist();
 rebuildTopicDatalist();
 document.getElementById('adminDate').value = todayLocal();
