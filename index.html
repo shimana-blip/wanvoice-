@@ -814,11 +814,11 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Vercel 版では接続先が環境変数から渡される。GitHub Pages 版では読めないので手入力のまま -->
-<script src="/api/config"></script>
+<!-- 公開時に GitHub Actions が Secrets から config.js を作る。無い環境（ローカル等）では手入力のまま -->
+<script src="config.js"></script>
 <script>
 // ===== SUPABASE CONFIG =====
-// 配信元（Vercel）に設定された接続先。ある場合は URL / Anon Key の入力を省く。
+// 配信元に設定された接続先（config.js）。ある場合は URL / Anon Key の入力を省く。
 var APP_CONFIG = window.WANVOICE_CONFIG || null;
 var hasBuiltinConfig = !!(APP_CONFIG && APP_CONFIG.supabaseUrl && APP_CONFIG.supabaseAnonKey);
 var supabaseUrl = '';
