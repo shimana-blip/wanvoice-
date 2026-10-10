@@ -799,6 +799,25 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div id="sessionList"><div class="empty">まだ回が登録されていません</div></div>
 </div>
 
+<!-- メンバー（管理者だけ。profiles がある DB のときだけ表示） -->
+<div class="list-section" id="memberSection" style="margin-top:16px;display:none">
+<div class="list-header" style="margin-bottom:16px">
+<div class="list-title">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+メンバー
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">招待する</label>
+<input type="email" class="form-input" id="inviteEmail" placeholder="メールアドレス" style="margin-bottom:8px">
+<input type="text" class="form-input" id="inviteName" placeholder="表示名（スタッフ名として使われます）" style="margin-bottom:8px">
+<div class="chip-group" id="inviteRoleChips"></div>
+</div>
+<button class="setup-btn primary" onclick="inviteMember()" style="width:100%">招待メールを送る</button>
+<div id="inviteStatus" class="setup-status"></div>
+<div id="memberList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
 </div>
 
 </div>
@@ -1886,6 +1905,7 @@ function switchTab(tab) {
     rebuildAdminLocationDropdown();
     rebuildKindAiChips();
     renderSessionList();
+    renderMembers();
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -2185,6 +2205,118 @@ async function deleteSession(btn) {
     saveLocalEvents(getLocalEvents().filter(function(e){ return e.event_id !== id; }));
   }
   renderSessionList();
+}
+
+// ===== メンバー（招待・役割・有効/無効）。管理者だけ =====
+var _inviteRole = 'staff';
+var _members = [];
+
+function rebuildInviteRoleChips() {
+  var box = document.getElementById('inviteRoleChips');
+  box.innerHTML = '';
+  [['staff', 'スタッフ'], ['admin', '管理者']].forEach(function(r) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn' + (_inviteRole === r[0] ? ' selected' : '');
+    b.textContent = r[1];
+    b.onclick = function() { _inviteRole = r[0]; rebuildInviteRoleChips(); };
+    box.appendChild(b);
+  });
+}
+
+async function renderMembers() {
+  var section = document.getElementById('memberSection');
+  // ローカルモード、または profiles が無い DB（Step 3-1 適用前）では出さない
+  if (!isConnected || !currentProfile || currentProfile.legacy || !isAdminUser()) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  rebuildInviteRoleChips();
+  var list = document.getElementById('memberList');
+  try {
+    var res = await fetch(supabaseUrl + '/rest/v1/profiles?select=id,display_name,role,active,created_at&order=created_at.asc', { headers: await supaHeaders() });
+    if (!res.ok) throw new Error();
+    _members = await res.json();
+  } catch (e) {
+    list.innerHTML = '<div class="empty">メンバーを読み込めませんでした</div>';
+    return;
+  }
+  list.innerHTML = '';
+  _members.forEach(function(m) {
+    var isMe = m.id === currentProfile.id;
+    var row = document.createElement('div');
+    row.className = 'session-item';
+    row.style.opacity = m.active ? '1' : '0.55';
+    row.innerHTML =
+      '<div style="min-width:0;overflow:hidden">' +
+        '<div style="font-size:15px;font-weight:600;color:var(--t1)">' + esc(m.display_name || '（名前なし）') + (isMe ? '<span style="font-size:11px;color:var(--t3);margin-left:6px">あなた</span>' : '') + '</div>' +
+        '<div style="font-size:12px;color:var(--t3);margin-top:3px">' + (m.role === 'admin' ? '管理者' : 'スタッフ') + (m.active ? '' : '・停止中') + '</div>' +
+      '</div>';
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:6px;flex-shrink:0';
+    function btn(label, fn) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip-btn'; b.style.padding = '6px 10px'; b.style.fontSize = '12px';
+      b.textContent = label; b.onclick = fn; actions.appendChild(b);
+    }
+    btn('名前', function() {
+      var v = prompt('表示名（スタッフ名として使われます）', m.display_name || '');
+      if (v !== null && v.trim()) updateMember(m.id, { display_name: v.trim() });
+    });
+    if (!isMe) {
+      btn(m.role === 'admin' ? 'スタッフにする' : '管理者にする', function() {
+        var to = m.role === 'admin' ? 'staff' : 'admin';
+        if (confirm('「' + m.display_name + '」を' + (to === 'admin' ? '管理者' : 'スタッフ') + 'にしますか？')) updateMember(m.id, { role: to });
+      });
+      btn(m.active ? '停止' : '再開', function() {
+        if (confirm('「' + m.display_name + '」の利用を' + (m.active ? '停止' : '再開') + 'しますか？')) updateMember(m.id, { active: !m.active });
+      });
+    }
+    row.appendChild(actions);
+    list.appendChild(row);
+  });
+}
+
+async function updateMember(id, patch) {
+  var res = await fetch(supabaseUrl + '/rest/v1/profiles?id=eq.' + id, {
+    method: 'PATCH',
+    headers: await supaHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' }),
+    body: JSON.stringify(patch)
+  });
+  if (!res.ok) {
+    var err = await res.json().catch(function(){ return {}; });
+    alert('変更できませんでした：' + (err.message || res.status));
+  } else {
+    var rows = await res.json();
+    if (!rows.length) alert('変更できませんでした（権限がありません）');
+  }
+  renderMembers();
+}
+
+async function inviteMember() {
+  var email = document.getElementById('inviteEmail').value.trim();
+  var name = document.getElementById('inviteName').value.trim();
+  var status = document.getElementById('inviteStatus');
+  status.style.display = 'block';
+  if (!email || !name) { status.className = 'setup-status error'; status.textContent = '❌ メールアドレスと表示名を入れてください'; return; }
+  if (!confirm(email + '（' + name + '・' + (_inviteRole === 'admin' ? '管理者' : 'スタッフ') + '）に招待メールを送りますか？')) { status.style.display = 'none'; return; }
+  status.className = 'setup-status';
+  status.textContent = '送信中...';
+  try {
+    var res = await fetch(supabaseUrl + '/functions/v1/invite-user', {
+      method: 'POST',
+      headers: await supaHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ email: email, display_name: name, role: _inviteRole })
+    });
+    var j = await res.json().catch(function(){ return {}; });
+    if (!res.ok) throw new Error(j.error || ('HTTP ' + res.status));
+    status.className = 'setup-status success';
+    status.textContent = '✅ 招待メールを送りました：' + email;
+    document.getElementById('inviteEmail').value = '';
+    document.getElementById('inviteName').value = '';
+    renderMembers();
+  } catch (e) {
+    status.className = 'setup-status error';
+    status.textContent = '❌ 招待できませんでした：' + e.message;
+  }
 }
 
 // ===== 日付から回を決める =====
