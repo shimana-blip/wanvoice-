@@ -591,11 +591,11 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div class="setup-icon">⚡</div>
 <div>
 <div class="setup-title">Supabase 接続設定</div>
-<div class="setup-desc">プロジェクトのURLとAPIキーを入力してください</div>
+<div class="setup-desc" id="setupDesc">プロジェクトのURLとAPIキーを入力してください</div>
 </div>
 </div>
 <div class="setup-form">
-<div class="setup-row">
+<div class="setup-row" id="setupKeyRow">
 <div>
 <label class="setup-label">Project URL</label>
 <input type="text" class="setup-input" id="supabaseUrl" placeholder="https://xxxxx.supabase.co">
@@ -814,8 +814,13 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Vercel 版では接続先が環境変数から渡される。GitHub Pages 版では読めないので手入力のまま -->
+<script src="/api/config"></script>
 <script>
 // ===== SUPABASE CONFIG =====
+// 配信元（Vercel）に設定された接続先。ある場合は URL / Anon Key の入力を省く。
+var APP_CONFIG = window.WANVOICE_CONFIG || null;
+var hasBuiltinConfig = !!(APP_CONFIG && APP_CONFIG.supabaseUrl && APP_CONFIG.supabaseAnonKey);
 var supabaseUrl = '';
 var supabaseKey = '';
 var supabaseAccessToken = '';   // ログイン後に発行される、実際に送るトークン
@@ -1065,9 +1070,19 @@ async function refreshData() {
 }
 
 // ===== AUTO RECONNECT =====
+// 配信元に接続先がある場合は、URL / Anon Key 欄を埋めて隠し、ログイン欄だけにする
+function applyBuiltinConfig() {
+  if (!hasBuiltinConfig) return;
+  document.getElementById('supabaseUrl').value = APP_CONFIG.supabaseUrl;
+  document.getElementById('supabaseKey').value = APP_CONFIG.supabaseAnonKey;
+  document.getElementById('setupKeyRow').style.display = 'none';
+  document.getElementById('setupDesc').textContent = 'メールアドレスとパスワードでログインしてください';
+}
+
 async function autoReconnect() {
-  var savedUrl = localStorage.getItem('wanvoice_supabase_url');
-  var savedKey = localStorage.getItem('wanvoice_supabase_key');
+  // 配信元の設定を優先する（キーを差し替えたときに古い保存値を使わないため）
+  var savedUrl = hasBuiltinConfig ? APP_CONFIG.supabaseUrl : localStorage.getItem('wanvoice_supabase_url');
+  var savedKey = hasBuiltinConfig ? APP_CONFIG.supabaseAnonKey : localStorage.getItem('wanvoice_supabase_key');
   var savedEmail = localStorage.getItem('wanvoice_login_email');
   var refreshToken = localStorage.getItem('wanvoice_refresh_token');
 
@@ -2084,6 +2099,7 @@ document.getElementById('modal').addEventListener('click', function(e) { if (e.t
 
 // ===== INIT =====
 initVoice();
+applyBuiltinConfig();
 autoReconnect();
 rebuildSessionDatalist();
 rebuildTopicDatalist();
