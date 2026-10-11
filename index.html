@@ -818,8 +818,11 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <div id="inviteLinkBox" style="display:none;margin-top:12px;padding:12px 14px;background:rgba(26,79,160,0.06);border:1px solid rgba(26,79,160,0.18);border-radius:var(--r-btn)">
   <div id="inviteLinkTitle" style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px"></div>
   <input type="text" class="form-input" id="inviteLinkText" readonly style="font-size:12px;margin-bottom:8px" onclick="this.select()">
-  <button type="button" class="btn btn-submit" style="width:100%;padding:9px" onclick="copyInviteLink()">リンクをコピー</button>
-  <div style="font-size:11px;color:var(--t3);margin-top:6px">LINE やメールで本人だけに送ってください。リンクは1回だけ・およそ1時間有効です。期限が切れたら一覧の「リンク」から作り直せます。</div>
+  <div style="display:flex;gap:8px">
+    <button type="button" class="btn btn-submit" style="flex:1;padding:9px" onclick="sendInviteByTeams()">Teams で送る</button>
+    <button type="button" class="btn btn-cancel" style="flex:1;padding:9px" onclick="copyInviteLink()">リンクをコピー</button>
+  </div>
+  <div style="font-size:11px;color:var(--t3);margin-top:6px">Teams の個人チャット（本人との1対1）や LINE・メールで、本人だけに送ってください。チャネルやグループには貼らないでください。リンクは1回だけ・およそ1時間有効です。期限が切れたら一覧の「リンク」から作り直せます。</div>
 </div>
 <div id="memberList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px"></div>
 </div>
@@ -2340,7 +2343,22 @@ async function updateMember(id, patch) {
   renderMembers();
 }
 
-function showInviteLink(title, link) {
+var _inviteFor = { email: '', name: '' };
+
+// Teams の「チャットを開く」リンクで、本人との1対1チャットを案内文入りで開く（送信は管理者が押す）
+function sendInviteByTeams() {
+  var link = document.getElementById('inviteLinkText').value;
+  if (!link || !_inviteFor.email) return;
+  var msg = (_inviteFor.name ? _inviteFor.name + 'さん\n' : '') +
+    'Wan!Voice（現場フィードバック）のアカウントを用意しました。\n' +
+    '下のリンクを開いて、パスワードを決めてください（1時間以内・1回だけ有効です）。\n' + link;
+  var url = 'https://teams.microsoft.com/l/chat/0/0?users=' + encodeURIComponent(_inviteFor.email) +
+    '&message=' + encodeURIComponent(msg);
+  window.open(url, '_blank', 'noopener');
+}
+
+function showInviteLink(title, link, email, name) {
+  _inviteFor = { email: email || '', name: name || '' };
   document.getElementById('inviteLinkTitle').textContent = title;
   document.getElementById('inviteLinkText').value = link;
   document.getElementById('inviteLinkBox').style.display = 'block';
@@ -2369,7 +2387,7 @@ async function issueMemberLink(m) {
     var j = await res.json().catch(function(){ return {}; });
     if (!res.ok || !j.link) throw new Error(j.error || ('HTTP ' + res.status));
     status.style.display = 'none';
-    showInviteLink(m.display_name + ' さん用のリンク（' + j.email + '）', j.link);
+    showInviteLink(m.display_name + ' さん用のリンク（' + j.email + '）', j.link, j.email, m.display_name);
   } catch (e) {
     status.className = 'setup-status error';
     status.textContent = '❌ リンクを作れませんでした：' + e.message;
@@ -2396,7 +2414,7 @@ async function inviteMember() {
     if (!res.ok) throw new Error(j.error || ('HTTP ' + res.status));
     status.className = 'setup-status success';
     status.textContent = '✅ ' + name + ' さんを登録しました。下のリンクを本人に送ってください。';
-    showInviteLink(name + ' さんの招待リンク（' + email + '）', j.link);
+    showInviteLink(name + ' さんの招待リンク（' + email + '）', j.link, email, name);
     document.getElementById('inviteEmail').value = '';
     document.getElementById('inviteName').value = '';
     renderMembers();
