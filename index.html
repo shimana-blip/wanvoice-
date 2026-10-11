@@ -828,6 +828,21 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
   </div>
   <div style="font-size:11px;color:var(--t3);margin-top:6px">Teams の個人チャット（本人との1対1）や LINE・メールで、本人だけに送ってください。チャネルやグループには貼らないでください。リンクは1回だけ・およそ1時間有効です。期限が切れたら一覧の「リンク」から作り直せます。</div>
 </div>
+<!-- まとめて招待 -->
+<details id="bulkInviteWrap" style="margin-top:16px">
+<summary style="cursor:pointer;font-size:14px;font-weight:600;color:var(--a);padding:6px 0">まとめて招待する（一覧を貼り付け）</summary>
+<div style="margin-top:8px">
+  <div style="font-size:12px;color:var(--t2);margin-bottom:6px;line-height:1.6">
+    1行に1人、「メールアドレス」と「表示名」を書きます（Excel の2列をそのまま貼り付けても大丈夫）。<br>
+    管理者にする人は、行の最後に「管理者」と書いてください。
+  </div>
+  <textarea class="form-input" id="bulkInviteText" style="min-height:140px;font-size:13px;line-height:1.6" placeholder="tanaka@example.co.jp, 田中&#10;sato@example.co.jp, 佐藤&#10;suzuki@example.co.jp, 鈴木, 管理者"></textarea>
+  <button class="setup-btn primary" onclick="bulkInvite()" style="width:100%;margin-top:8px">まとめて招待リンクを作る</button>
+  <div id="bulkInviteStatus" class="setup-status"></div>
+  <div style="font-size:11px;color:var(--t3);margin-top:6px">リンクはおよそ1時間で期限が切れます。作ったら続けて送ってください。間に合わなかった人は、下の一覧の「リンク」から作り直せます。</div>
+  <div id="bulkInviteResults" style="margin-top:12px;display:flex;flex-direction:column;gap:8px"></div>
+</div>
+</details>
 <div id="memberList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px"></div>
 </div>
 
@@ -2408,12 +2423,7 @@ var _inviteFor = { email: '', name: '' };
 function sendInviteByTeams() {
   var link = document.getElementById('inviteLinkText').value;
   if (!link || !_inviteFor.email) return;
-  var msg = (_inviteFor.name ? _inviteFor.name + 'さん\n' : '') +
-    'Wan!Voice（現場フィードバック）のアカウントを用意しました。\n' +
-    '下のリンクを開いて、パスワードを決めてください（1時間以内・1回だけ有効です）。\n' + link;
-  var url = 'https://teams.microsoft.com/l/chat/0/0?users=' + encodeURIComponent(_inviteFor.email) +
-    '&message=' + encodeURIComponent(msg);
-  window.open(url, '_blank', 'noopener');
+  sendTeamsTo(_inviteFor.email, _inviteFor.name, link);
 }
 
 function showInviteLink(title, link, email, name) {
@@ -2451,6 +2461,101 @@ async function issueMemberLink(m) {
     status.className = 'setup-status error';
     status.textContent = '❌ リンクを作れませんでした：' + e.message;
   }
+}
+
+// ===== まとめて招待（一覧を貼り付け → 全員分の招待リンクを作り、行ごとに Teams で送る） =====
+function parseBulkInvite(text) {
+  var rows = [], errors = [];
+  text.split(/\r?\n/).forEach(function(line, i) {
+    var raw = line.trim();
+    if (!raw) return;
+    var cols = raw.split(/[\t,，、]+/).map(function(s){ return s.trim(); }).filter(Boolean);
+    var email = cols.filter(function(c){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c); })[0];
+    var isAdmin = cols.some(function(c){ return c === '管理者' || c.toLowerCase() === 'admin'; });
+    var name = cols.filter(function(c){ return c !== email && c !== '管理者' && c.toLowerCase() !== 'admin' && c !== 'スタッフ'; })[0];
+    if (!email || !name) { errors.push((i + 1) + '行目：' + raw); return; }
+    rows.push({ email: email.toLowerCase(), name: name, role: isAdmin ? 'admin' : 'staff' });
+  });
+  return { rows: rows, errors: errors };
+}
+
+function sendTeamsTo(email, name, link) {
+  var msg = (name ? name + 'さん\n' : '') +
+    'Wan!Voice（現場フィードバック）のアカウントを用意しました。\n' +
+    '下のリンクを開いて、パスワードを決めてください（1時間以内・1回だけ有効です）。\n' + link;
+  window.open('https://teams.microsoft.com/l/chat/0/0?users=' + encodeURIComponent(email) +
+    '&message=' + encodeURIComponent(msg), '_blank', 'noopener');
+}
+
+async function bulkInvite() {
+  var status = document.getElementById('bulkInviteStatus');
+  var box = document.getElementById('bulkInviteResults');
+  var parsed = parseBulkInvite(document.getElementById('bulkInviteText').value);
+  status.style.display = 'block';
+  if (parsed.errors.length) {
+    status.className = 'setup-status error';
+    status.textContent = '❌ 読み取れない行があります（メールアドレスと表示名が必要です）：' + parsed.errors.join(' ／ ');
+    return;
+  }
+  if (!parsed.rows.length) { status.className = 'setup-status error'; status.textContent = '❌ 一覧を貼り付けてください'; return; }
+  var admins = parsed.rows.filter(function(r){ return r.role === 'admin'; }).length;
+  if (!confirm(parsed.rows.length + '人分の招待リンクを作りますか？' + (admins ? '\n（うち管理者 ' + admins + '人）' : ''))) { status.style.display = 'none'; return; }
+
+  box.innerHTML = '';
+  var made = 0, skipped = 0, failed = 0;
+  for (var i = 0; i < parsed.rows.length; i++) {
+    var r = parsed.rows[i];
+    status.className = 'setup-status';
+    status.textContent = '作成中… ' + (i + 1) + ' / ' + parsed.rows.length;
+    var row = document.createElement('div');
+    row.className = 'session-item';
+    var info = document.createElement('div');
+    info.style.cssText = 'min-width:0;overflow:hidden';
+    info.innerHTML = '<div style="font-size:15px;font-weight:600;color:var(--t1)">' + esc(r.name) +
+      (r.role === 'admin' ? '<span style="font-size:11px;color:var(--a);margin-left:6px">管理者</span>' : '') + '</div>' +
+      '<div style="font-size:12px;color:var(--t3);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(r.email) + '</div>';
+    var actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:6px;flex-shrink:0;align-items:center';
+    row.appendChild(info); row.appendChild(actions);
+    box.appendChild(row);
+    try {
+      var res = await fetch(supabaseUrl + '/functions/v1/invite-user', {
+        method: 'POST',
+        headers: await supaHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ email: r.email, display_name: r.name, role: r.role })
+      });
+      var j = await res.json().catch(function(){ return {}; });
+      if (res.status === 409) {
+        skipped++;
+        actions.innerHTML = '<span style="font-size:12px;color:var(--t3)">登録済み（下の一覧の「リンク」から送れます）</span>';
+        continue;
+      }
+      if (!res.ok || !j.link) throw new Error(j.error || ('HTTP ' + res.status));
+      made++;
+      (function(rr, link) {
+        var teams = document.createElement('button');
+        teams.type = 'button'; teams.className = 'chip-btn'; teams.style.cssText = 'padding:6px 10px;font-size:12px';
+        teams.textContent = 'Teams で送る';
+        teams.onclick = function() { sendTeamsTo(rr.email, rr.name, link); teams.textContent = '送信画面を開いた ✓'; teams.classList.add('selected'); };
+        var copy = document.createElement('button');
+        copy.type = 'button'; copy.className = 'chip-btn'; copy.style.cssText = 'padding:6px 10px;font-size:12px';
+        copy.textContent = 'コピー';
+        copy.onclick = async function() {
+          try { await navigator.clipboard.writeText(link); } catch (e) {}
+          showToast('✅ ' + rr.name + ' さんのリンクをコピーしました');
+        };
+        actions.appendChild(teams); actions.appendChild(copy);
+      })(r, j.link);
+    } catch (e) {
+      failed++;
+      actions.innerHTML = '<span style="font-size:12px;color:#DC2626">失敗：' + esc(e.message) + '</span>';
+    }
+  }
+  status.className = 'setup-status ' + (failed ? 'error' : 'success');
+  status.textContent = (failed ? '⚠️ ' : '✅ ') + '作成 ' + made + '人' + (skipped ? '・登録済み ' + skipped + '人' : '') + (failed ? '・失敗 ' + failed + '人' : '') +
+    '。各行の「Teams で送る」を押して、1人ずつ送信してください。';
+  document.getElementById('bulkInviteText').value = '';
+  renderMembers();
 }
 
 async function inviteMember() {
