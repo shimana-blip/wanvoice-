@@ -813,8 +813,14 @@ textarea.form-input{resize:none;min-height:120px;line-height:1.6}
 <input type="text" class="form-input" id="inviteName" placeholder="表示名（スタッフ名として使われます）" style="margin-bottom:8px">
 <div class="chip-group" id="inviteRoleChips"></div>
 </div>
-<button class="setup-btn primary" onclick="inviteMember()" style="width:100%">招待メールを送る</button>
+<button class="setup-btn primary" onclick="inviteMember()" style="width:100%">招待リンクを作る</button>
 <div id="inviteStatus" class="setup-status"></div>
+<div id="inviteLinkBox" style="display:none;margin-top:12px;padding:12px 14px;background:rgba(26,79,160,0.06);border:1px solid rgba(26,79,160,0.18);border-radius:var(--r-btn)">
+  <div id="inviteLinkTitle" style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px"></div>
+  <input type="text" class="form-input" id="inviteLinkText" readonly style="font-size:12px;margin-bottom:8px" onclick="this.select()">
+  <button type="button" class="btn btn-submit" style="width:100%;padding:9px" onclick="copyInviteLink()">リンクをコピー</button>
+  <div style="font-size:11px;color:var(--t3);margin-top:6px">LINE やメールで本人だけに送ってください。リンクは1回だけ・およそ1時間有効です。期限が切れたら一覧の「リンク」から作り直せます。</div>
+</div>
 <div id="memberList" style="margin-top:16px;display:flex;flex-direction:column;gap:8px"></div>
 </div>
 
@@ -1227,7 +1233,45 @@ async function requestPasswordReset() {
 // 招待メール／再設定メールのリンク（#access_token=...&type=invite|recovery）で来たときの処理
 var _linkSession = null;
 
+// 管理者が発行した招待リンク（?token_hash=...&type=invite|recovery）で来たとき。
+// トークンを Supabase で確かめてセッションに替え、「パスワードを設定」画面を出す。
+var _linkVerify = null;
+
+function handleTokenHashLink() {
+  var q = new URLSearchParams(location.search);
+  var tokenHash = q.get('token_hash');
+  var type = q.get('type');
+  if (!tokenHash || (type !== 'invite' && type !== 'recovery')) return false;
+  // リンクのトークンは使い捨て。アドレス欄から消しておく
+  history.replaceState(null, '', location.pathname);
+  document.getElementById('setupSection').classList.add('hidden');
+  document.getElementById('passwordSetSection').classList.remove('hidden');
+  document.getElementById('passwordSetDesc').textContent = type === 'recovery'
+    ? '新しいパスワードを決めてください（8文字以上）'
+    : 'Wan!Voice へようこそ。これから使うパスワードを決めてください（8文字以上）';
+  var url = document.getElementById('supabaseUrl').value.trim();
+  var key = document.getElementById('supabaseKey').value.trim();
+  _linkVerify = (async function() {
+    var res = await fetch(url + '/auth/v1/verify', {
+      method: 'POST',
+      headers: { 'apikey': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: type, token_hash: tokenHash })
+    });
+    var j = await res.json().catch(function(){ return {}; });
+    if (!res.ok || !j.access_token) throw new Error('リンクが無効か期限切れです。管理者にリンクの発行し直しを頼んでください。');
+    _linkSession = { access_token: j.access_token, refresh_token: j.refresh_token, type: type };
+  })();
+  _linkVerify.catch(function(e) {
+    var status = document.getElementById('passwordSetStatus');
+    status.style.display = 'block';
+    status.className = 'setup-status error';
+    status.textContent = '❌ ' + e.message;
+  });
+  return true;
+}
+
 function handleAuthLink() {
+  if (handleTokenHashLink()) return true;
   if (!location.hash || location.hash.length < 2) return false;
   var p = new URLSearchParams(location.hash.slice(1));
   if (p.get('error')) {
@@ -1260,6 +1304,10 @@ async function submitNewPassword() {
   var url = document.getElementById('supabaseUrl').value.trim();
   var key = document.getElementById('supabaseKey').value.trim();
   if (!url || !key) { status.className = 'setup-status error'; status.textContent = '❌ 接続先が設定されていません'; return; }
+  if (_linkVerify) {
+    try { await _linkVerify; } catch (e) { status.className = 'setup-status error'; status.textContent = '❌ ' + e.message; return; }
+  }
+  if (!_linkSession) { status.className = 'setup-status error'; status.textContent = '❌ リンクを確認できませんでした。もう一度リンクを開いてください。'; return; }
   var res = await fetch(url + '/auth/v1/user', {
     method: 'PUT',
     headers: { 'apikey': key, 'Authorization': 'Bearer ' + _linkSession.access_token, 'Content-Type': 'application/json' },
@@ -2257,6 +2305,7 @@ async function renderMembers() {
       b.type = 'button'; b.className = 'chip-btn'; b.style.padding = '6px 10px'; b.style.fontSize = '12px';
       b.textContent = label; b.onclick = fn; actions.appendChild(b);
     }
+    if (!isMe) btn('リンク', function() { issueMemberLink(m); });
     btn('名前', function() {
       var v = prompt('表示名（スタッフ名として使われます）', m.display_name || '');
       if (v !== null && v.trim()) updateMember(m.id, { display_name: v.trim() });
@@ -2291,15 +2340,52 @@ async function updateMember(id, patch) {
   renderMembers();
 }
 
+function showInviteLink(title, link) {
+  document.getElementById('inviteLinkTitle').textContent = title;
+  document.getElementById('inviteLinkText').value = link;
+  document.getElementById('inviteLinkBox').style.display = 'block';
+}
+
+async function copyInviteLink() {
+  var el = document.getElementById('inviteLinkText');
+  try { await navigator.clipboard.writeText(el.value); }
+  catch (e) { el.select(); document.execCommand('copy'); }
+  showToast('✅ リンクをコピーしました');
+}
+
+// 既存メンバーにリンクを発行し直す（招待リンクの期限切れ、パスワードを忘れた人向け）
+async function issueMemberLink(m) {
+  if (!confirm('「' + m.display_name + '」さん用のリンクを作りますか？\n（開くとパスワードを決め直す画面になります）')) return;
+  var status = document.getElementById('inviteStatus');
+  status.style.display = 'block';
+  status.className = 'setup-status';
+  status.textContent = 'リンクを作っています...';
+  try {
+    var res = await fetch(supabaseUrl + '/functions/v1/invite-user', {
+      method: 'POST',
+      headers: await supaHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ action: 'link', user_id: m.id })
+    });
+    var j = await res.json().catch(function(){ return {}; });
+    if (!res.ok || !j.link) throw new Error(j.error || ('HTTP ' + res.status));
+    status.style.display = 'none';
+    showInviteLink(m.display_name + ' さん用のリンク（' + j.email + '）', j.link);
+  } catch (e) {
+    status.className = 'setup-status error';
+    status.textContent = '❌ リンクを作れませんでした：' + e.message;
+  }
+}
+
 async function inviteMember() {
   var email = document.getElementById('inviteEmail').value.trim();
   var name = document.getElementById('inviteName').value.trim();
   var status = document.getElementById('inviteStatus');
   status.style.display = 'block';
   if (!email || !name) { status.className = 'setup-status error'; status.textContent = '❌ メールアドレスと表示名を入れてください'; return; }
-  if (!confirm(email + '（' + name + '・' + (_inviteRole === 'admin' ? '管理者' : 'スタッフ') + '）に招待メールを送りますか？')) { status.style.display = 'none'; return; }
+  if (!confirm(email + '（' + name + '・' + (_inviteRole === 'admin' ? '管理者' : 'スタッフ') + '）の招待リンクを作りますか？')) { status.style.display = 'none'; return; }
+  document.getElementById('inviteLinkBox').style.display = 'none';
   status.className = 'setup-status';
-  status.textContent = '送信中...';
+  status.textContent = '作成中...';
   try {
     var res = await fetch(supabaseUrl + '/functions/v1/invite-user', {
       method: 'POST',
@@ -2309,7 +2395,8 @@ async function inviteMember() {
     var j = await res.json().catch(function(){ return {}; });
     if (!res.ok) throw new Error(j.error || ('HTTP ' + res.status));
     status.className = 'setup-status success';
-    status.textContent = '✅ 招待メールを送りました：' + email;
+    status.textContent = '✅ ' + name + ' さんを登録しました。下のリンクを本人に送ってください。';
+    showInviteLink(name + ' さんの招待リンク（' + email + '）', j.link);
     document.getElementById('inviteEmail').value = '';
     document.getElementById('inviteName').value = '';
     renderMembers();
