@@ -44,19 +44,22 @@
   | profiles | 有効なユーザー | トリガーのみ | 管理者 | auth.users 削除に連動 |
 - 最後の有効な管理者を下げる／止める変更はトリガー `keep_one_admin` で拒否。
 - 共有アカウント `shimana@net-fun.co.jp` は管理者（表示名「嶋名」）。スタッフの個人アカウントに移行したら、共有アカウントのパスワードを変える。
-- 招待: Wan!Voice「回の管理 → メンバー」→ Edge Function `invite-user`（管理者だけ実行可、service_role は関数内のみ）。招待メールのリンクで Wan!Voice の「パスワードを設定」画面が開く。
-  - Supabase Auth の Site URL / Redirect URLs に `https://shimana-blip.github.io/wanvoice-/` が必要。
+- 招待: Wan!Voice「回の管理 → メンバー」→ Edge Function `invite-user`（管理者だけ実行可、service_role は関数内のみ）。
+  - **メールは送らない。** `generateLink` で `?token_hash=...&type=invite` の**招待リンク**を作り、管理者が「Teams で送る」（本人との1対1チャットを案内文入りで開く）か「リンクをコピー」で本人に渡す。
+  - 本人がリンクを開くと Wan!Voice が `/auth/v1/verify` でセッションに替え、「パスワードを設定」画面になる。リンクは1回限り・約1時間。
+  - 期限切れやパスワード忘れは、一覧の「リンク」で再発行（`action: 'link'`、recovery リンク）。
+  - Supabase Auth の Site URL は未設定（localhost のまま）。メール経由のリンクは使えないので、招待・再設定は必ずこの仕組みで行う。
+  - 2026-10-11 にテスト用アカウント（tata・停止中）で一連の流れを確認済み。
 - 画面の出し分け（スタッフには管理メニュー・削除・インポートを出さない、スタッフ名は表示名に固定）は Wan!Voice / Wan!Sync とも実装済み。profiles が無い DB では管理者扱いにフォールバックする。
 
 ### Edge Function
-- `invite-user`：管理者による招待。
+- `invite-user`：管理者による招待リンク・再設定リンクの発行。
 - `classify-feedback`（Wan!Voice）/ `sync-analyze` / `hot-sync` / `sync-chat` / `reflect`（Wan!Sync）：冒頭で `rpc/is_active` を呼び、有効なユーザー以外は 401（anon key だけでは Claude API を使わせない）。
 - ソースはすべて `supabase/functions/` にある。変更したら同じ内容でデプロイし、ここにも残す。
 
 ---
 
 ## 残タスク
-- 招待の実地テスト（テスト用メールアドレスで、招待 → パスワード設定 → スタッフでログイン）
 - スタッフを個人アカウントへ移行し、共有アカウントのパスワードを変更
 - `sessions` テーブルの廃止（どちらのアプリも参照していない）
 
