@@ -1392,9 +1392,15 @@ async function submitNewPassword() {
   });
   if (!res.ok) {
     var err = await res.json().catch(function(){ return {}; });
-    status.className = 'setup-status error';
-    status.textContent = '❌ 設定できませんでした：' + (err.msg || err.error_description || res.status);
-    return;
+    var raw = err.msg || err.error_description || err.message || '';
+    // すでに同じパスワードが設定済み（リンクを開き直した等）。パスワードは有効なので、そのまま使い始める
+    var samePassword = err.error_code === 'same_password' || /different from the old/i.test(raw);
+    if (!samePassword) {
+      var msg = /weak|short|characters/i.test(raw) ? 'パスワードが短いか、簡単すぎます' : (raw || res.status);
+      status.className = 'setup-status error';
+      status.textContent = '❌ 設定できませんでした：' + msg;
+      return;
+    }
   }
   // 設定できたら、そのままログイン状態にして画面を開く
   localStorage.setItem('wanvoice_supabase_url', url);
